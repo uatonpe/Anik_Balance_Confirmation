@@ -1,82 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANIK Balance Confirmation System</title>
+  <title>ANIK Balance Control Dashboard</title>
   <style>
     :root{
-      --blue:#0B3D91;
-      --blue2:#1E3A8A;
-      --red:#C62828;
-      --red2:#8B0000;
-      --bg:#F4F7FB;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#667085;
-      --line:#E5E7EB;
-      --green:#0F9F6E;
-      --orange:#F59E0B;
-      --shadow:0 14px 36px rgba(17,24,39,.08);
-      --radius:18px;
+      --blue:#0B3D91;--blue2:#092D6F;--red:#C62828;--bg:#F4F7FB;--card:#fff;--text:#111827;--muted:#667085;--line:#E5E7EB;--green:#079455;--orange:#DC6803;--shadow:0 14px 34px rgba(17,24,39,.08);--radius:18px;
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:Poppins,Inter,Segoe UI,Arial,sans-serif;font-size:15px}
-    .app-header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--blue),#092D6F);color:white;box-shadow:0 10px 30px rgba(11,61,145,.25)}
-    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 18px;max-width:1500px;margin:0 auto}
-    .brand{display:flex;align-items:center;gap:12px;min-width:0}
-    .brand-logo{width:56px;height:56px;border-radius:14px;background:white;object-fit:contain;padding:6px;display:none}
-    .brand-mark{width:56px;height:56px;border-radius:14px;background:white;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;letter-spacing:.5px}
-    .brand-title{line-height:1.15;min-width:0}
-    .brand-title h1{margin:0;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .brand-title p{margin:4px 0 0;font-size:12px;opacity:.9}
-    .nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .nav button,.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;transition:.18s;background:white;color:var(--blue)}
-    .nav button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.15)}
-    .btn.primary{background:var(--blue);color:white}.btn.red{background:var(--red);color:white}.btn.green{background:var(--green);color:white}.btn.ghost{background:#EEF2FF;color:var(--blue)}.btn.dark{background:#111827;color:white}.btn.small{padding:7px 10px;border-radius:10px;font-size:12px}
-    .container{max-width:1500px;margin:0 auto;padding:18px}
-    .hero{background:linear-gradient(135deg,#ffffff,#EEF4FF);border:1px solid #DCE7FF;border-radius:24px;padding:22px;box-shadow:var(--shadow);display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:center;margin-bottom:18px}
-    .hero h2{font-size:28px;line-height:1.2;margin:0 0 8px;color:var(--blue)}
-    .hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.6}.hero-badge{display:inline-flex;background:#FEF2F2;color:var(--red);padding:7px 12px;border-radius:999px;font-weight:800;font-size:12px;margin-bottom:10px}
-    .option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
-    .option-card{background:white;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;min-height:170px;display:flex;flex-direction:column;justify-content:space-between}
-    .option-card:hover{transform:translateY(-4px);border-color:#BFD2FF}.option-icon{width:58px;height:58px;border-radius:18px;background:#EEF4FF;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:900}.option-card.red .option-icon{background:#FEF2F2;color:var(--red)}.option-card h3{font-size:20px;margin:14px 0 6px}.option-card p{margin:0;color:var(--muted);line-height:1.5}
-    .panel{display:none}.panel.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.card-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-title h2,.card-title h3{margin:0;color:var(--blue)}
-    .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-weight:800;font-size:13px;color:#344054}.field input,.field select,.field textarea{width:100%;border:1px solid #D0D5DD;border-radius:12px;padding:11px 12px;font-size:15px;background:white;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,61,145,.12)}.field textarea{min-height:78px;resize:vertical}.required{color:var(--red)}.readonly{background:#F9FAFB!important;color:#475467}.full{grid-column:1/-1}.half{grid-column:span 2}.form-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .filters{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.filters .field input,.filters .field select{padding:9px 10px;font-size:13px}.filters .field label{font-size:12px}
-    .summary-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.metric{background:white;border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(17,24,39,.05);cursor:pointer;min-height:96px}.metric:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.metric.red{border-left-color:var(--red)}.metric.green{border-left-color:var(--green)}.metric.orange{border-left-color:var(--orange)}.metric.darkred{border-left-color:var(--red2)}.metric .label{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.3px}.metric .value{font-size:26px;font-weight:900;margin-top:8px;color:#111827}.metric .sub{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .charts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart-card{background:white;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(17,24,39,.05);min-height:265px}.chart-card h3{margin:0 0 10px;color:var(--blue);font-size:15px}.chart-card canvas{width:100%;height:190px}.legend{font-size:12px;color:var(--muted);line-height:1.5;margin-top:4px}
-    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:white}table{border-collapse:collapse;width:100%;min-width:1000px}th,td{padding:10px 11px;border-bottom:1px solid #EEF2F6;text-align:left;font-size:13px;vertical-align:top}th{background:#F8FAFC;color:#344054;position:sticky;top:0;z-index:2;font-size:12px;text-transform:uppercase;letter-spacing:.2px}tr:hover td{background:#FBFDFF}.num{text-align:right;font-variant-numeric:tabular-nums}.badge{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px}.badge.Matched,.badge.Low,.badge.Done,.badge.Available,.badge.Complete,.badge.SystemMatched{background:#ECFDF3;color:#027A48}.badge.NotMatched,.badge.SystemNoMatch,.badge.High,.badge.Missing{background:#FEF3F2;color:#B42318}.badge.Critical{background:#3B0A0A;color:#fff}.badge.Medium,.badge.Pending,.badge.TAPending,.badge.ACManagerPending,.badge.BothPending,.badge.PendingTAUpdate,.badge.PendingACManagerUpdate,.badge.PendingBoth{background:#FFFAEB;color:#B54708}.badge.AfterCutoff{background:#FEF3F2;color:#B42318}.badge.BeforeCutoff{background:#EEF4FF;color:var(--blue)}
-    .proof-link{display:inline-flex;background:#EEF4FF;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;text-decoration:none}.missing{color:#B42318;font-weight:900}.muted{color:var(--muted)}.section-tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.section-tabs button{border:1px solid #D0D5DD;background:white;color:#344054;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer}.section-tabs button.active{background:var(--blue);color:white;border-color:var(--blue)}
-    .toast{position:fixed;right:18px;bottom:18px;z-index:200;background:#111827;color:white;padding:13px 15px;border-radius:14px;box-shadow:0 15px 38px rgba(0,0,0,.3);display:none;max-width:430px}.toast.success{background:#027A48}.toast.error{background:#B42318}.loader{position:fixed;inset:0;background:rgba(244,247,251,.86);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}.spinner{width:70px;height:70px;border-radius:50%;border:7px solid #DCE7FF;border-top-color:var(--red);animation:spin .8s linear infinite}.loader-box{text-align:center;color:var(--blue);font-weight:900}.loader-box p{margin:12px 0 0}@keyframes spin{to{transform:rotate(360deg)}}
-    .print-title{display:none}.footer-note{color:var(--muted);font-size:12px;text-align:center;margin:25px 0}.logo-preview{max-width:90px;max-height:70px;object-fit:contain;background:white;border:1px solid var(--line);border-radius:12px;padding:5px}.risk-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.risk-box{padding:12px;border-radius:15px;font-weight:900;text-align:center}.risk-box.low{background:#ECFDF3;color:#027A48}.risk-box.medium{background:#FFFAEB;color:#B54708}.risk-box.high{background:#FEF3F2;color:#B42318}.risk-box.critical{background:#3B0A0A;color:white}
-    @media(max-width:1200px){.summary-grid{grid-template-columns:repeat(3,1fr)}.charts-grid{grid-template-columns:1fr 1fr}.filters,.form-grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}}
-    @media(max-width:760px){.header-inner{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:flex-start}.brand-title h1{font-size:17px}.container{padding:12px}.option-grid,.summary-grid,.charts-grid,.filters,.form-grid,.risk-strip{grid-template-columns:1fr}.hero h2{font-size:22px}.metric .value{font-size:24px}.half{grid-column:1/-1}}
-    @media print{
-      body{background:white}.app-header,.nav,.filters,.form-actions,.section-tabs,.toast,.loader,.no-print{display:none!important}.container{max-width:none;padding:0}.card,.chart-card,.metric{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.panel{display:none}.panel.active{display:block}.print-title{display:block;text-align:center;margin-bottom:10px}.summary-grid{grid-template-columns:repeat(4,1fr)}.charts-grid{grid-template-columns:1fr 1fr}.table-wrap{overflow:visible}table{min-width:0;font-size:11px}th,td{font-size:10px;padding:6px}.signature{display:grid!important;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:50px}.signature div{border-top:1px solid #111;text-align:center;padding-top:8px;font-weight:800}
-    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Poppins,Inter,Segoe UI,Arial,sans-serif;font-size:15px}.app-header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;box-shadow:0 10px 28px rgba(11,61,145,.23);border-bottom:4px solid var(--red)}.header-inner{max-width:1500px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;gap:12px;align-items:center;min-width:0}.brand-logo{width:58px;height:58px;background:white;border-radius:15px;padding:6px;object-fit:contain}.brand-title h1{margin:0;font-size:21px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand-title p{margin:4px 0 0;font-size:12px;opacity:.92}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav button,.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;background:white;color:var(--blue);transition:.16s}.nav button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.14)}.btn.primary{background:var(--blue);color:white}.btn.red{background:var(--red);color:white}.btn.green{background:var(--green);color:white}.btn.ghost{background:#EEF4FF;color:var(--blue)}.btn.dark{background:#111827;color:white}.btn.small{padding:7px 10px;font-size:12px;border-radius:10px}.container{max-width:1500px;margin:0 auto;padding:18px}.panel{display:none}.panel.active{display:block}.hero{background:linear-gradient(135deg,#fff,#EEF4FF);border:1px solid #DCE7FF;border-radius:24px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px;display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}.hero h2{font-size:30px;color:var(--blue);margin:0 0 8px}.hero p{color:var(--muted);margin:0;line-height:1.6}.hero-badge{display:inline-flex;background:#FEF2F2;color:var(--red);padding:7px 12px;border-radius:999px;font-weight:900;font-size:12px;margin-bottom:10px}.option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.option-card{background:white;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);cursor:pointer;min-height:160px;transition:.2s}.option-card:hover{transform:translateY(-4px);border-color:#BDD0FF}.option-icon{width:58px;height:58px;border-radius:18px;background:#EEF4FF;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:900}.option-card.red .option-icon{background:#FEF2F2;color:var(--red)}.option-card h3{font-size:20px;margin:14px 0 6px}.option-card p{margin:0;color:var(--muted);line-height:1.5}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.card-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-title h2,.card-title h3{margin:0;color:var(--blue)}.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-weight:800;font-size:13px;color:#344054}.field input,.field select,.field textarea{width:100%;border:1px solid #D0D5DD;border-radius:12px;padding:10px 11px;font-size:14px;background:white;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,61,145,.11)}.field textarea{min-height:42px;resize:vertical}.readonly{background:#F9FAFB!important;color:#475467}.required{color:var(--red)}.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:white}table{border-collapse:collapse;width:100%;min-width:1100px}th,td{padding:10px 11px;border-bottom:1px solid #EEF2F6;text-align:left;font-size:13px;vertical-align:top}th{background:#F8FAFC;color:#344054;font-size:12px;text-transform:uppercase;letter-spacing:.2px;position:sticky;top:0;z-index:2}tr:hover td{background:#FBFDFF}.num{text-align:right}.batch-table input,.batch-table select,.batch-table textarea{min-width:130px}.batch-table textarea{min-width:230px}.summary-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.metric{background:white;border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(17,24,39,.05);cursor:pointer;min-height:92px}.metric.green{border-left-color:var(--green)}.metric.orange{border-left-color:var(--orange)}.metric.red{border-left-color:var(--red)}.metric .label{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase}.metric .value{font-size:27px;font-weight:900;margin-top:8px}.metric .sub{font-size:12px;color:var(--muted);margin-top:4px}.filters{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;white-space:nowrap}.badge.Done,.badge.Complete,.badge.SystemMatched,.badge.Low,.badge.Available{background:#ECFDF3;color:#027A48}.badge.Pending,.badge.TAPending,.badge.ACManagerPending,.badge.BothPending,.badge.Medium,.badge.BeforeCutoff{background:#FFFAEB;color:#B54708}.badge.SystemNoMatch,.badge.High,.badge.AfterCutoff,.badge.Missing{background:#FEF3F2;color:#B42318}.badge.Critical{background:#3B0A0A;color:white}.proof-link{display:inline-flex;background:#EEF4FF;color:var(--blue);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;text-decoration:none}.muted{color:var(--muted)}.notice{border:1px solid #DCE7FF;background:#F8FBFF;color:#344054;border-radius:14px;padding:12px;line-height:1.5}.notice.warn{border-color:#FEDF89;background:#FFFAEB}.toast{position:fixed;right:18px;bottom:18px;z-index:200;background:#111827;color:white;padding:13px 15px;border-radius:14px;box-shadow:0 15px 38px rgba(0,0,0,.28);display:none;max-width:460px}.toast.success{background:#027A48}.toast.error{background:#B42318}.page-loader{position:fixed;inset:0;background:rgba(244,247,251,.75);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}.spinner{width:54px;height:54px;border-radius:50%;border:6px solid #DCE7FF;border-top-color:var(--red);animation:spin .8s linear infinite}.loader-box{text-align:center;color:var(--blue);font-weight:900}.loader-box p{margin:10px 0 0}@keyframes spin{to{transform:rotate(360deg)}}.status-line{font-size:13px;color:var(--muted);font-weight:700}.row-error{outline:2px solid #FCA5A5!important}.section-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.section-tabs button{border:1px solid #D0D5DD;background:white;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer}.section-tabs button.active{background:var(--blue);color:white;border-color:var(--blue)}.print-title{display:none}.signature{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}.signature div{border-top:1px solid #111827;text-align:center;padding-top:8px;font-weight:800}
+    @media(max-width:1200px){.summary-grid{grid-template-columns:repeat(3,1fr)}.filters,.form-grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.option-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.header-inner{flex-direction:column;align-items:flex-start}.brand-title h1{font-size:17px}.container{padding:12px}.option-grid,.summary-grid,.filters,.form-grid{grid-template-columns:1fr}.hero h2{font-size:24px}}
+    @media print{.app-header,.nav,.form-actions,.filters,.section-tabs,.toast,.page-loader,.no-print{display:none!important}.container{max-width:none;padding:0}.card,.metric{box-shadow:none;border-color:#ddd}.print-title{display:block;text-align:center;margin-bottom:12px}.signature{display:grid!important}body{background:white}table{min-width:auto;font-size:11px}th,td{font-size:10px;padding:6px}}
   </style>
 </head>
 <body>
-  <div class="loader" id="loader"><div class="loader-box"><div class="spinner"></div><p>Loading ANIK System...</p></div></div>
+  <div class="page-loader" id="pageLoader"><div class="loader-box"><div class="spinner"></div><p>Saving data...</p></div></div>
   <div class="toast" id="toast"></div>
 
   <header class="app-header">
     <div class="header-inner">
-      <div class="brand">
-        <img id="brandLogo" class="brand-logo" alt="ANIK Logo">
-        <div id="brandMark" class="brand-mark">ANIK</div>
-        <div class="brand-title">
-          <h1 id="systemTitle">ANIK Balance Confirmation System</h1>
-          <p id="companyName">ANIK Financial Services Pvt. Ltd. | Balance Control Dashboard</p>
-        </div>
-      </div>
-      <div class="nav no-print">
-        <button onclick="showPanel('home')">Home</button>
-        <button onclick="showPanel('ta')">TA Update</button>
-        <button onclick="showPanel('ac')">AC Manager</button>
-        <button onclick="showPanel('dashboard'); loadDashboard();">Dashboard</button>
-      </div>
+      <div class="brand"><img id="brandLogo" class="brand-logo" src="ANIK_logo.png" alt="ANIK"><div class="brand-title"><h1>ANIK Financial Services Pvt. Ltd.</h1><p>Balance Control Dashboard</p></div></div>
+      <div class="nav"><button onclick="showPanel('home')">Home</button><button onclick="showPanel('ta')">TA Update</button><button onclick="showPanel('ac')">AC Manager</button><button onclick="openDashboard()">Dashboard</button></div>
     </div>
   </header>
 
@@ -84,30 +29,24 @@
     <section id="home" class="panel active">
       <div class="hero">
         <div>
-          <span class="hero-badge">NO LOGIN • NO PASSWORD • NO OTP</span>
+          <span class="hero-badge">ANIK OFFICE SYSTEM</span>
           <h2>Daily Balance Confirmation</h2>
-          <p>TA daily update and AC Manager bank balance update in one simple office dashboard.</p>
+          <p>TA and AC Manager entries are handled separately. Each user can fill all assigned bank data and submit once.</p>
           <div class="option-grid">
-            <div class="option-card" onclick="showPanel('ta')">
-              <div><div class="option-icon">TA</div><h3>TA Balance Update</h3><p>Branch-wise system balance with proof upload.</p></div>
-            </div>
-            <div class="option-card red" onclick="showPanel('ac')">
-              <div><div class="option-icon">₹</div><h3>AC Manager Update</h3><p>All bank actual balance update by Vikas Kudale.</p></div>
-            </div>
-            <div class="option-card" onclick="showPanel('dashboard'); loadDashboard();">
-              <div><div class="option-icon">DB</div><h3>Admin Dashboard</h3><p>Daily status, pending reports and review entries at one glance.</p></div>
-            </div>
+            <div class="option-card" onclick="showPanel('ta')"><div class="option-icon">TA</div><h3>TA Balance Update</h3><p>Fill all branch banks and submit one time.</p></div>
+            <div class="option-card red" onclick="showPanel('ac')"><div class="option-icon">₹</div><h3>AC Manager Update</h3><p>Fill all bank balances and submit one time.</p></div>
+            <div class="option-card" onclick="openDashboard()"><div class="option-icon">DB</div><h3>Admin Dashboard</h3><p>Done, pending and review entries at one glance.</p></div>
           </div>
         </div>
         <div class="card" style="margin:0">
-          <div class="card-title"><h3>System Control</h3></div>
-          <div class="risk-strip">
-            <div class="risk-box low">Low<br><span id="homeLow">0</span></div>
-            <div class="risk-box medium">Medium<br><span id="homeMedium">0</span></div>
-            <div class="risk-box high">High<br><span id="homeHigh">0</span></div>
-            <div class="risk-box critical">Critical<br><span id="homeCritical">0</span></div>
+          <div class="card-title"><h3>Today Control</h3></div>
+          <div class="summary-grid" style="grid-template-columns:repeat(2,1fr)" id="homeSummary">
+            <div class="metric green"><div class="label">TA Done</div><div class="value">-</div><div class="sub">Open dashboard</div></div>
+            <div class="metric orange"><div class="label">TA Pending</div><div class="value">-</div><div class="sub">Open dashboard</div></div>
+            <div class="metric green"><div class="label">AC Done</div><div class="value">-</div><div class="sub">Open dashboard</div></div>
+            <div class="metric red"><div class="label">Review</div><div class="value">-</div><div class="sub">Open dashboard</div></div>
           </div>
-          <p class="muted" style="line-height:1.6;margin-top:14px">Staff, branches, banks, logo and settings are controlled from Google Sheet master data.</p>
+          <p id="connectStatus" class="status-line" style="margin-top:14px">Opening screen is ready. Sheet data will connect in background.</p>
         </div>
       </div>
     </section>
@@ -115,22 +54,16 @@
     <section id="ta" class="panel">
       <div class="card">
         <div class="card-title"><h2>TA Daily Software/System Balance Update</h2><button class="btn ghost no-print" onclick="resetTAForm()">Clear</button></div>
+        <div class="notice">Select TA name once. All active banks for that branch will appear below. Fill all rows and click single submit.</div>
         <form id="taForm">
-          <div class="form-grid">
+          <div class="form-grid" style="margin-top:14px">
             <div class="field"><label>Date <span class="required">*</span></label><input type="date" id="taDate" required></div>
             <div class="field"><label>TA Name <span class="required">*</span></label><select id="taName" required onchange="onTAChange()"></select></div>
             <div class="field"><label>Branch</label><input id="taBranch" class="readonly" readonly></div>
-            <div class="field"><label>Bank Account <span class="required">*</span></label><select id="taBank" required></select></div>
-            <div class="field"><label>Software/System Balance <span class="required">*</span></label><input id="taSystemBalance" type="number" step="0.01" required placeholder="0.00"></div>
-            <div class="field"><label>Today balance matched with system? <span class="required">*</span></label><select id="taMatched" required onchange="toggleReason()"><option value="">Select</option><option>Yes</option><option>No</option></select></div>
-            <div class="field full" id="reasonBox" style="display:none"><label>Reason if No <span class="required">*</span></label><textarea id="taReason" placeholder="Enter reason for mismatch"></textarea></div>
-            <div class="field half"><label>Proof Upload <span class="muted">(Optional)</span></label><input id="taProof" type="file" accept="image/*,.pdf"></div>
-            <div class="field"><label>Remarks</label><textarea id="taRemarks" placeholder="Optional remarks"></textarea></div>
+            <div class="field"><label>Total Banks</label><input id="taBankCount" class="readonly" readonly></div>
           </div>
-          <div class="form-actions no-print">
-            <button class="btn primary" type="submit">Submit TA Update</button>
-            <button class="btn ghost" type="button" onclick="showPanel('dashboard'); loadDashboard();">Open Dashboard</button>
-          </div>
+          <div id="taBatchTable" style="margin-top:14px"></div>
+          <div class="form-actions no-print"><button class="btn primary" type="submit">Submit All TA Updates</button><button class="btn ghost" type="button" onclick="openDashboard()">Open Dashboard</button></div>
         </form>
       </div>
     </section>
@@ -138,485 +71,114 @@
     <section id="ac" class="panel">
       <div class="card">
         <div class="card-title"><h2>AC Manager Daily Actual Bank Balance Update</h2><button class="btn ghost no-print" onclick="resetACForm()">Clear</button></div>
+        <div class="notice">Select AC Manager name once. All active bank accounts will appear below. Fill all bank balances and click single submit.</div>
         <form id="acForm">
-          <div class="form-grid">
+          <div class="form-grid" style="margin-top:14px">
             <div class="field"><label>Date <span class="required">*</span></label><input type="date" id="acDate" required></div>
             <div class="field"><label>AC Manager Name <span class="required">*</span></label><select id="acName" required></select></div>
-            <div class="field"><label>Bank Account <span class="required">*</span></label><select id="acBank" required></select></div>
-            <div class="field"><label>Actual Bank Balance <span class="required">*</span></label><input id="acBankBalance" type="number" step="0.01" required placeholder="0.00"></div>
-            <div class="field"><label>Bank Proof Upload</label><input id="acProof" type="file" accept="image/*,.pdf"></div>
-            <div class="field"><label>Remarks</label><textarea id="acRemarks" placeholder="Optional remarks"></textarea></div>
+            <div class="field"><label>Total Banks</label><input id="acBankCount" class="readonly" readonly></div>
           </div>
-          <div class="form-actions no-print">
-            <button class="btn red" type="submit">Submit AC Manager Update</button>
-            <button class="btn ghost" type="button" onclick="showPanel('dashboard'); loadDashboard();">Open Dashboard</button>
-          </div>
+          <div id="acBatchTable" style="margin-top:14px"></div>
+          <div class="form-actions no-print"><button class="btn red" type="submit">Submit All AC Manager Updates</button><button class="btn ghost" type="button" onclick="openDashboard()">Open Dashboard</button></div>
         </form>
       </div>
     </section>
 
     <section id="dashboard" class="panel">
-      <div class="print-title">
-        <h2>ANIK Balance Control Dashboard</h2>
-        <p id="printMeta"></p>
-      </div>
-
+      <div class="print-title"><h2>ANIK Balance Control Dashboard</h2><p id="printMeta"></p></div>
       <div class="card no-print">
-        <div class="card-title"><h2>Dashboard Filters</h2><div><button class="btn primary small" onclick="loadDashboard()">Refresh</button> <button class="btn ghost small" onclick="clearFilters()">Clear Filters</button></div></div>
+        <div class="card-title"><h2>Dashboard Filters</h2><div><button class="btn primary small" onclick="loadDashboard()">Refresh</button> <button class="btn ghost small" onclick="clearFilters()">Clear</button></div></div>
         <div class="filters">
-          <div class="field"><label>Date</label><input type="date" id="fDate"></div>
-          <div class="field"><label>From Date</label><input type="date" id="fFrom"></div>
-          <div class="field"><label>To Date</label><input type="date" id="fTo"></div>
-          <div class="field"><label>Branch</label><select id="fBranch"></select></div>
-          <div class="field"><label>Bank</label><select id="fBank"></select></div>
-          <div class="field"><label>TA Name</label><select id="fTA"></select></div>
-          <div class="field"><label>AC Manager</label><select id="fAC"></select></div>
-          <div class="field"><label>Status</label><select id="fStatus"><option>All</option><option>Complete</option><option>System Matched</option><option>System No Match</option><option>TA Pending</option><option>AC Manager Pending</option><option>Both Pending</option></select></div>
-          <div class="field"><label>Risk Level</label><select id="fRisk"><option>All</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
-          <div class="field"><label>Proof Status</label><select id="fProof"><option>All</option><option>Uploaded</option><option>Optional</option></select></div>
-          <div class="field"><label>Reason Missing</label><select id="fReason"><option>All</option><option>Yes</option><option>No</option></select></div>
-          <div class="field"><label>Search</label><input id="fSearch" placeholder="Search branch/bank/staff"></div>
+          <div class="field"><label>Date</label><input type="date" id="fDate"></div><div class="field"><label>Branch</label><select id="fBranch"></select></div><div class="field"><label>Bank</label><select id="fBank"></select></div><div class="field"><label>TA Name</label><select id="fTA"></select></div><div class="field"><label>AC Manager</label><select id="fAC"></select></div><div class="field"><label>Status</label><select id="fStatus"><option>All</option><option>Complete</option><option>System Matched</option><option>System No Match</option><option>TA Pending</option><option>AC Manager Pending</option><option>Both Pending</option></select></div><div class="field"><label>Review Level</label><select id="fRisk"><option>All</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div><div class="field"><label>Reason Missing</label><select id="fReason"><option>All</option><option>Yes</option><option>No</option></select></div><div class="field"><label>Search</label><input id="fSearch" placeholder="Search"></div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-title">
-          <h2>Admin Dashboard - One Glance Summary</h2>
-          <div class="no-print">
-            <button class="btn dark small" onclick="window.print()">Print Dashboard</button>
-            <button class="btn green small" onclick="exportCSV('full')">Export Full CSV</button>
-            <button class="btn red small" onclick="exportCSV('high')">Review CSV</button>
-            <button class="btn ghost small" onclick="exportCSV('pending')">Pending CSV</button>
-            <button class="btn ghost small" onclick="exportCSV('completion')">Staff Completion CSV</button>
-          </div>
-        </div>
-        <div class="summary-grid" id="summaryGrid"></div>
-      </div>
-
-      <div class="charts-grid">
-        <div class="chart-card"><h3>Status Donut</h3><canvas id="chartStatus"></canvas><div class="legend" id="legendStatus"></div></div>
-        <div class="chart-card"><h3>Branch-wise Review Count</h3><canvas id="chartBranch"></canvas><div class="legend" id="legendBranch"></div></div>
-        <div class="chart-card"><h3>Bank-wise Review Count</h3><canvas id="chartBank"></canvas><div class="legend" id="legendBank"></div></div>
-        <div class="chart-card"><h3>Daily Review Trend</h3><canvas id="chartTrend"></canvas><div class="legend" id="legendTrend"></div></div>
-        <div class="chart-card"><h3>TA Staff Done / Pending</h3><canvas id="chartStaff"></canvas><div class="legend" id="legendStaff"></div></div>
-        <div class="chart-card"><h3>Risk Level Summary</h3><canvas id="chartRisk"></canvas><div class="legend" id="legendRisk"></div></div>
-      </div>
-
-      <div class="card">
-        <div class="section-tabs no-print">
-          <button class="active" onclick="setDashTab('completion',this)">Who Done / Pending</button>
-          <button onclick="setDashTab('highrisk',this)">Review Required</button>
-          <button onclick="setDashTab('allrows',this)">Full Report</button>
-        </div>
-        <div id="tabCompletion" class="dash-tab"></div>
-        <div id="tabHighrisk" class="dash-tab" style="display:none"></div>
-        <div id="tabAllrows" class="dash-tab" style="display:none"></div>
-        <div class="signature" style="display:none"><div>Prepared By</div><div>Checked By</div><div>Approved By</div></div>
-      </div>
+      <div class="card"><div class="card-title"><h2>Admin Dashboard - One Glance Summary</h2><div class="no-print"><button class="btn dark small" onclick="window.print()">Print</button> <button class="btn green small" onclick="exportCSV('full')">Export Full CSV</button> <button class="btn red small" onclick="exportCSV('review')">Review CSV</button></div></div><div id="dashStatus" class="status-line" style="margin-bottom:12px"></div><div class="summary-grid" id="summaryGrid"></div></div>
+      <div class="card"><div class="section-tabs no-print"><button class="active" onclick="setDashTab('completion',this)">Done / Pending</button><button onclick="setDashTab('review',this)">Review Required</button><button onclick="setDashTab('all',this)">Full Report</button></div><div id="tabCompletion" class="dash-tab"></div><div id="tabReview" class="dash-tab" style="display:none"></div><div id="tabAll" class="dash-tab" style="display:none"></div><div class="signature"><div>Prepared By</div><div>Checked By</div><div>Approved By</div></div></div>
     </section>
-
-    <div class="footer-note"></div>
   </main>
 
 <script>
-  // IMPORTANT: Paste your deployed Google Apps Script /exec URL here before uploading to GitHub Pages.
-  // Example: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
-  const API_URL = 'https://script.google.com/macros/s/AKfycbw4ED0m68l0yYZM2oku6wuzVsmgDNNo0x8HuKoAcqDDMQh1AIfXNl7Y5m9Df22kMlQN/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyhtgXfa78dX8xdanuD5riPzQnMN9KMi69RJMOzq1UpjjfN3n5_iPTOSiGuZgIn74oc/exec';
 
-  const STATE = { masters:{users:[],branches:[],banks:[]}, settings:{}, dashboard:null, activeTab:'completion' };
-  const STATUS_COLORS = ['#0F9F6E','#C62828','#F59E0B','#0B3D91','#98A2B3','#8B0000','#667085'];
-
+  const DEFAULT_MASTERS = {
+    users:[
+      {Name:'Riyaz Shaikh',Role:'TA',Branch:'Kallam',ActiveStatus:'Active'},
+      {Name:'Kavita Pawar',Role:'TA',Branch:'Bhoom',ActiveStatus:'Active'},
+      {Name:'Jayashri Kothwale',Role:'TA',Branch:'Washi',ActiveStatus:'Active'},
+      {Name:'Vikas Kudale',Role:'AC Manager',Branch:'All',ActiveStatus:'Active'}
+    ],
+    branches:[{BranchName:'Kallam',ActiveStatus:'Active'},{BranchName:'Bhoom',ActiveStatus:'Active'},{BranchName:'Washi',ActiveStatus:'Active'}],
+    banks:[
+      {BankName:'SBI Kallam',BranchName:'Kallam',ActiveStatus:'Active'},
+      {BankName:'SBI Washi',BranchName:'Washi',ActiveStatus:'Active'},
+      {BankName:'SBI Bhoom',BranchName:'Bhoom',ActiveStatus:'Active'},
+      {BankName:'MGB Washi',BranchName:'Washi',ActiveStatus:'Active'},
+      {BankName:'MGB Kallam',BranchName:'Kallam',ActiveStatus:'Active'},
+      {BankName:'MGB Bhoom',BranchName:'Bhoom',ActiveStatus:'Active'},
+      {BankName:'SPMBT Kallam',BranchName:'Kallam',ActiveStatus:'Active'},
+      {BankName:'Lokparyay DCCS',BranchName:'Kallam',ActiveStatus:'Active'}
+    ]
+  };
+  const STATE={masters:DEFAULT_MASTERS,settings:{},dashboard:null,activeTab:'completion',loaded:false};
   document.addEventListener('DOMContentLoaded', init);
 
   function init(){
-    showLoader(true);
-    apiCall('getInitialData')
-      .then(res=>{
-        showLoader(false);
-        if(!res.success) return toast('Unable to load system','error');
-        STATE.masters = res.masters;
-        STATE.settings = res.settings;
-        applyTheme();
-        fillMasters();
-        setDefaultDates(res.today);
-        bindForms();
-        // Dashboard data is loaded only when Dashboard is opened, so home page opens fast.
-      })
-      .catch(err=>{
-        showLoader(false); toast(err.message || err, 'error');
-      });
+    applyTheme(); fillMasters(); setDefaultDates(); bindForms(); renderTABatchRows(); renderACBatchRows();
+    // Background connection only. No blocking loader on start.
+    tryLoadInitialData();
   }
-
-  function apiCall(action, payload){
-    if(!API_URL || API_URL.includes('PASTE_YOUR')) {
-      return Promise.reject(new Error('Please paste your Google Apps Script API /exec URL in API_URL inside index.html.'));
-    }
-    return iframePost(action, payload || {});
+  function tryLoadInitialData(){
+    if(!apiReady()){ setStatus('connectStatus','API URL not pasted yet. Forms are visible; paste API URL before live use.'); return; }
+    setStatus('connectStatus','Connecting to Google Sheet in background...');
+    apiCall('getInitialData',{},30000).then(res=>{
+      STATE.loaded=true; STATE.masters=res.masters||DEFAULT_MASTERS; STATE.settings=res.settings||{}; applyTheme(); fillMasters(); setDefaultDates(res.today); renderTABatchRows(); renderACBatchRows(); setStatus('connectStatus','Connected to master data.');
+    }).catch(e=>{ setStatus('connectStatus','Opening screen ready. Sheet connection failed: '+(e.message||e)); });
   }
+  function apiReady(){ return API_URL && !API_URL.includes('PASTE_YOUR'); }
+  function apiCall(action,payload,timeout){ if(!apiReady()) return Promise.reject(new Error('Please paste Apps Script /exec URL in API_URL.')); return iframePost(action,payload||{},timeout||60000); }
+  function iframePost(action,payload,timeout){ return new Promise((resolve,reject)=>{ const requestId='req_'+Date.now()+'_'+Math.random().toString(36).slice(2); const timer=setTimeout(()=>{cleanup();reject(new Error('Taking too much time. Please check Apps Script deployment URL.'));},timeout); const iframe=document.createElement('iframe'); iframe.name='anik_api_'+requestId; iframe.style.display='none'; const form=document.createElement('form'); form.method='POST'; form.action=API_URL+(API_URL.indexOf('?')>-1?'&':'?')+'iframe=1'; form.target=iframe.name; form.style.display='none'; const input=document.createElement('input'); input.type='hidden'; input.name='request'; input.value=JSON.stringify({requestId,action,payload}); form.appendChild(input); function onMessage(ev){ const data=ev.data||{}; if(!data||data.source!=='ANIK_BALANCE_API'||data.requestId!==requestId)return; cleanup(); const res=data.response; if(!res||!res.success) reject(new Error((res&&res.message)||'API error')); else resolve(res.result); } function cleanup(){ clearTimeout(timer); window.removeEventListener('message',onMessage); setTimeout(()=>{ if(form.parentNode)form.parentNode.removeChild(form); if(iframe.parentNode)iframe.parentNode.removeChild(iframe);},50);} window.addEventListener('message',onMessage); document.body.appendChild(iframe); document.body.appendChild(form); form.submit(); }); }
 
-  function iframePost(action, payload){
-    return new Promise((resolve, reject)=>{
-      const requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-      const timer = setTimeout(()=>{
-        cleanup();
-        reject(new Error('Loading is taking too much time. Please check Apps Script deployment URL and internet connection.'));
-      }, 45000);
+  function applyTheme(){ const s=STATE.settings||{}; if(s.ThemeColorPrimary) document.documentElement.style.setProperty('--blue',s.ThemeColorPrimary); if(s.ThemeColorSecondary) document.documentElement.style.setProperty('--red',s.ThemeColorSecondary); const logo=s.LogoURL||'ANIK_logo.png'; document.getElementById('brandLogo').src=logo; }
+  function showPanel(id){ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+  function openDashboard(){ showPanel('dashboard'); if(!STATE.dashboard) loadDashboard(); }
+  function fillMasters(){ const u=STATE.masters.users||[], b=STATE.masters.branches||[], banks=STATE.masters.banks||[]; fillSelect('taName',u.filter(x=>x.Role==='TA'&&x.ActiveStatus==='Active').map(x=>x.Name),'Select TA'); fillSelect('acName',u.filter(x=>x.Role==='AC Manager'&&x.ActiveStatus==='Active').map(x=>x.Name),'Select AC Manager'); fillSelect('fBranch',['All'].concat(b.filter(x=>x.ActiveStatus==='Active').map(x=>x.BranchName))); fillSelect('fBank',['All'].concat(banks.filter(x=>x.ActiveStatus==='Active').map(x=>x.BankName))); fillSelect('fTA',['All'].concat(u.filter(x=>x.Role==='TA'&&x.ActiveStatus==='Active').map(x=>x.Name))); fillSelect('fAC',['All'].concat(u.filter(x=>x.Role==='AC Manager'&&x.ActiveStatus==='Active').map(x=>x.Name))); if(!val('taName')) document.getElementById('taName').selectedIndex=1; if(!val('acName')) document.getElementById('acName').selectedIndex=1; onTAChange(false); }
+  function fillSelect(id,arr,placeholder){ const el=document.getElementById(id); if(!el)return; const old=el.value; el.innerHTML=''; if(placeholder){ const o=document.createElement('option'); o.value=''; o.textContent=placeholder; el.appendChild(o);} arr.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; el.appendChild(o);}); if([...el.options].some(o=>o.value===old)) el.value=old; }
+  function setDefaultDates(todayDMY){ const ymd=todayDMY?dmyToYmd(todayDMY):new Date().toISOString().slice(0,10); ['taDate','acDate','fDate'].forEach(id=>{const el=document.getElementById(id); if(el&&!el.value)el.value=ymd;}); }
+  function bindForms(){ document.getElementById('taForm').addEventListener('submit',submitTABatch); document.getElementById('acForm').addEventListener('submit',submitACBatch); ['fDate','fBranch','fBank','fTA','fAC','fStatus','fRisk','fReason'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(STATE.dashboard)loadDashboard(true)})); document.getElementById('fSearch').addEventListener('input',debounce(()=>{if(STATE.dashboard)loadDashboard(true)},450)); }
+  function onTAChange(render=true){ const ta=(STATE.masters.users||[]).find(u=>u.Name===val('taName')); document.getElementById('taBranch').value=ta?ta.Branch:''; if(render)renderTABatchRows(); }
+  function activeBanks(){ return (STATE.masters.banks||[]).filter(b=>b.ActiveStatus==='Active'); }
+  function renderTABatchRows(){ const branch=val('taBranch'); const banks=activeBanks().filter(b=>!branch||b.BranchName===branch); document.getElementById('taBankCount').value=banks.length; const rows=banks.map((b,i)=>`<tr data-bank="${escAttr(b.BankName)}"><td><b>${esc(b.BankName)}</b><div class="muted">${esc(b.BranchName)}</div></td><td><input type="number" step="0.01" class="ta-bal" placeholder="0.00"></td><td><select class="ta-match" onchange="toggleRowReason(this)"><option value="">Select</option><option>Yes</option><option>No</option></select></td><td><textarea class="ta-reason" placeholder="Reason only if No" style="display:none"></textarea></td><td><input type="file" class="ta-proof" accept="image/*,.pdf"></td><td><textarea class="ta-remarks" placeholder="Optional"></textarea></td></tr>`).join(''); document.getElementById('taBatchTable').innerHTML=`<div class="table-wrap"><table class="batch-table"><thead><tr><th>Bank</th><th>Software/System Balance *</th><th>Match? *</th><th>Reason</th><th>Proof Optional</th><th>Remarks</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="muted">No bank found for selected TA branch.</td></tr>'}</tbody></table></div>`; }
+  function renderACBatchRows(){ const banks=activeBanks(); document.getElementById('acBankCount').value=banks.length; const rows=banks.map(b=>`<tr data-bank="${escAttr(b.BankName)}"><td><b>${esc(b.BankName)}</b><div class="muted">${esc(b.BranchName)}</div></td><td><input type="number" step="0.01" class="ac-bal" placeholder="0.00"></td><td><input type="file" class="ac-proof" accept="image/*,.pdf"></td><td><textarea class="ac-remarks" placeholder="Optional"></textarea></td></tr>`).join(''); document.getElementById('acBatchTable').innerHTML=`<div class="table-wrap"><table class="batch-table"><thead><tr><th>Bank</th><th>Actual Bank Balance *</th><th>Proof Optional</th><th>Remarks</th></tr></thead><tbody>${rows}</tbody></table></div>`; }
+  function toggleRowReason(sel){ const tr=sel.closest('tr'), box=tr.querySelector('.ta-reason'); box.style.display=sel.value==='No'?'block':'none'; }
 
-      const iframe = document.createElement('iframe');
-      iframe.name = 'anik_api_' + requestId;
-      iframe.style.display = 'none';
+  async function submitTABatch(e){ e.preventDefault(); clearRowErrors('#taBatchTable'); const rows=[], trs=[...document.querySelectorAll('#taBatchTable tbody tr[data-bank]')]; let ok=true; for(const tr of trs){ const bankName=tr.dataset.bank, bal=tr.querySelector('.ta-bal').value, match=tr.querySelector('.ta-match').value, reason=tr.querySelector('.ta-reason').value.trim(), file=tr.querySelector('.ta-proof').files[0]; if(!bal){markErr(tr.querySelector('.ta-bal')); ok=false;} if(!match){markErr(tr.querySelector('.ta-match')); ok=false;} if(match==='No'&&!reason){markErr(tr.querySelector('.ta-reason')); ok=false;} if(file&&file.size>8*1024*1024){toast('File below 8 MB only: '+bankName,'error'); return;} rows.push({bankName,systemBalance:bal,isMatchedWithSystem:match,reasonIfNo:reason,remarks:tr.querySelector('.ta-remarks').value,proof:file?await readFile(file):null}); } if(!ok) return toast('Please fill all required TA rows. Reason is required only for No match.','error'); if(!confirm('Submit all TA bank updates now?'))return; showPageLoader(true,'Saving TA data...'); apiCall('submitTABatch',{date:val('taDate'),taName:val('taName'),branch:val('taBranch'),rows},90000).then(res=>{showPageLoader(false);toast(res.message||'TA data saved','success');resetTAForm();STATE.dashboard=null;}).catch(e=>{showPageLoader(false);toast(e.message||e,'error');}); }
+  async function submitACBatch(e){ e.preventDefault(); clearRowErrors('#acBatchTable'); const rows=[], trs=[...document.querySelectorAll('#acBatchTable tbody tr[data-bank]')]; let ok=true; for(const tr of trs){ const bankName=tr.dataset.bank, bal=tr.querySelector('.ac-bal').value, file=tr.querySelector('.ac-proof').files[0]; if(!bal){markErr(tr.querySelector('.ac-bal')); ok=false;} if(file&&file.size>8*1024*1024){toast('File below 8 MB only: '+bankName,'error'); return;} rows.push({bankName,bankBalance:bal,remarks:tr.querySelector('.ac-remarks').value,proof:file?await readFile(file):null}); } if(!ok) return toast('Please fill actual balance for all banks.','error'); if(!confirm('Submit all AC Manager bank updates now?'))return; showPageLoader(true,'Saving AC Manager data...'); apiCall('submitACBatch',{date:val('acDate'),acManagerName:val('acName'),rows},90000).then(res=>{showPageLoader(false);toast(res.message||'AC data saved','success');resetACForm();STATE.dashboard=null;}).catch(e=>{showPageLoader(false);toast(e.message||e,'error');}); }
+  function clearRowErrors(scope){ document.querySelectorAll(scope+' .row-error').forEach(x=>x.classList.remove('row-error')); }
+  function markErr(el){ if(el){el.classList.add('row-error'); if(el.style.display==='none')el.style.display='block';} }
+  function resetTAForm(){ document.querySelectorAll('#taBatchTable input,#taBatchTable textarea').forEach(x=>x.value=''); document.querySelectorAll('#taBatchTable select').forEach(x=>x.value=''); document.querySelectorAll('.ta-reason').forEach(x=>x.style.display='none'); }
+  function resetACForm(){ document.querySelectorAll('#acBatchTable input,#acBatchTable textarea').forEach(x=>x.value=''); }
+  function readFile(file){ return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve({name:file.name,mimeType:file.type,dataBase64:r.result}); r.onerror=reject; r.readAsDataURL(file); }); }
 
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'iframe=1';
-      form.target = iframe.name;
-      form.style.display = 'none';
-
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'request';
-      input.value = JSON.stringify({ requestId, action, payload });
-      form.appendChild(input);
-
-      function onMessage(ev){
-        const data = ev.data || {};
-        if(!data || data.source !== 'ANIK_BALANCE_API' || data.requestId !== requestId) return;
-        cleanup();
-        const res = data.response;
-        if(!res || !res.success) reject(new Error((res && res.message) || 'API error'));
-        else resolve(res.result);
-      }
-      function cleanup(){
-        clearTimeout(timer);
-        window.removeEventListener('message', onMessage);
-        setTimeout(()=>{ if(form.parentNode) form.parentNode.removeChild(form); if(iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 50);
-      }
-      window.addEventListener('message', onMessage);
-      document.body.appendChild(iframe);
-      document.body.appendChild(form);
-      form.submit();
-    });
-  }
-
-  function applyTheme(){
-    const s = STATE.settings || {};
-    if(s.ThemeColorPrimary) document.documentElement.style.setProperty('--blue', s.ThemeColorPrimary);
-    if(s.ThemeColorSecondary) document.documentElement.style.setProperty('--red', s.ThemeColorSecondary);
-    document.getElementById('systemTitle').textContent = s.SystemTitle || 'ANIK Balance Confirmation System';
-    document.getElementById('companyName').textContent = (s.CompanyName || 'ANIK Financial Services Pvt. Ltd.') + ' | Balance Control Dashboard';
-    const logo = s.LogoURL;
-    const img = document.getElementById('brandLogo');
-    const mark = document.getElementById('brandMark');
-    if(logo){ img.src = logo; img.style.display='block'; mark.style.display='none'; }
-    else { img.style.display='none'; mark.style.display='flex'; }
-  }
-
-  function showPanel(id){
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-
-  function fillMasters(){
-    const users = STATE.masters.users || [];
-    const branches = STATE.masters.branches || [];
-    const banks = STATE.masters.banks || [];
-    fillSelect('taName', users.filter(u=>u.Role==='TA' && u.ActiveStatus==='Active').map(u=>u.Name), 'Select TA');
-    fillSelect('acName', users.filter(u=>u.Role==='AC Manager' && u.ActiveStatus==='Active').map(u=>u.Name), 'Select AC Manager');
-    fillSelect('acBank', banks.filter(b=>b.ActiveStatus==='Active').map(b=>b.BankName), 'Select Bank');
-    fillSelect('fBranch', ['All'].concat(branches.filter(b=>b.ActiveStatus==='Active').map(b=>b.BranchName)));
-    fillSelect('fBank', ['All'].concat(banks.filter(b=>b.ActiveStatus==='Active').map(b=>b.BankName)));
-    fillSelect('fTA', ['All'].concat(users.filter(u=>u.Role==='TA' && u.ActiveStatus==='Active').map(u=>u.Name)));
-    fillSelect('fAC', ['All'].concat(users.filter(u=>u.Role==='AC Manager' && u.ActiveStatus==='Active').map(u=>u.Name)));
-    onTAChange();
-  }
-
-  function fillSelect(id, arr, placeholder){
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    if(placeholder){ const op=document.createElement('option'); op.value=''; op.textContent=placeholder; el.appendChild(op); }
-    arr.forEach(v=>{ const op=document.createElement('option'); op.value=v; op.textContent=v; el.appendChild(op); });
-  }
-
-  function setDefaultDates(todayDMY){
-    const ymd = dmyToYmd(todayDMY);
-    ['taDate','acDate','fDate'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=ymd; });
-  }
-
-  function bindForms(){
-    document.getElementById('taForm').addEventListener('submit', submitTA);
-    document.getElementById('acForm').addEventListener('submit', submitAC);
-    ['fDate','fFrom','fTo','fBranch','fBank','fTA','fAC','fStatus','fRisk','fProof','fReason'].forEach(id=>document.getElementById(id).addEventListener('change',()=>loadDashboard()));
-    document.getElementById('fSearch').addEventListener('input', debounce(()=>loadDashboard(), 450));
-  }
-
-  function onTAChange(){
-    const taName = document.getElementById('taName').value;
-    const ta = (STATE.masters.users||[]).find(u=>u.Name===taName);
-    document.getElementById('taBranch').value = ta ? ta.Branch : '';
-    const banks = (STATE.masters.banks||[]).filter(b=>b.ActiveStatus==='Active' && (!ta || b.BranchName===ta.Branch)).map(b=>b.BankName);
-    fillSelect('taBank', banks, 'Select Bank');
-  }
-
-  function toggleReason(){
-    const v = document.getElementById('taMatched').value;
-    document.getElementById('reasonBox').style.display = (v === 'No') ? 'block' : 'none';
-  }
-
-  async function submitTA(e){
-    e.preventDefault();
-    const file = document.getElementById('taProof').files[0];
-    if(file && file.size > 8*1024*1024) return toast('Proof file should be below 8 MB','error');
-    if(document.getElementById('taMatched').value==='No' && !document.getElementById('taReason').value.trim()) return toast('Reason is required when Match = No','error');
-    if(!confirm('Save TA update? If same date + branch + bank exists, it will be updated.')) return;
-    showLoader(true);
-    const proof = file ? await readFile(file) : null;
-    const payload = {
-      date: document.getElementById('taDate').value,
-      taName: document.getElementById('taName').value,
-      branch: document.getElementById('taBranch').value,
-      bankName: document.getElementById('taBank').value,
-      systemBalance: document.getElementById('taSystemBalance').value,
-      isMatchedWithSystem: document.getElementById('taMatched').value,
-      reasonIfNo: document.getElementById('taReason').value,
-      remarks: document.getElementById('taRemarks').value,
-      proof
-    };
-    apiCall('submitTA', payload)
-      .then(res=>{ showLoader(false); toast(res.message,'success'); resetTAForm(); if(document.getElementById('dashboard').classList.contains('active')) loadDashboard(true); })
-      .catch(err=>{ showLoader(false); toast(err.message || err,'error'); });
-  }
-
-  async function submitAC(e){
-    e.preventDefault();
-    const file = document.getElementById('acProof').files[0];
-    if(file && file.size > 8*1024*1024) return toast('Proof file should be below 8 MB','error');
-    if(!confirm('Save AC Manager update? If same date + bank exists, it will be updated.')) return;
-    showLoader(true);
-    const proof = file ? await readFile(file) : null;
-    const payload = {
-      date: document.getElementById('acDate').value,
-      acManagerName: document.getElementById('acName').value,
-      bankName: document.getElementById('acBank').value,
-      bankBalance: document.getElementById('acBankBalance').value,
-      remarks: document.getElementById('acRemarks').value,
-      proof
-    };
-    apiCall('submitAC', payload)
-      .then(res=>{ showLoader(false); toast(res.message,'success'); resetACForm(); if(document.getElementById('dashboard').classList.contains('active')) loadDashboard(true); })
-      .catch(err=>{ showLoader(false); toast(err.message || err,'error'); });
-  }
-
-  function resetTAForm(){ document.getElementById('taForm').reset(); setDefaultDates(ymdToDmy(new Date().toISOString().slice(0,10))); onTAChange(); toggleReason(); }
-  function resetACForm(){ document.getElementById('acForm').reset(); setDefaultDates(ymdToDmy(new Date().toISOString().slice(0,10))); }
-
-  function readFile(file){
-    return new Promise((resolve,reject)=>{
-      const reader = new FileReader();
-      reader.onload = () => resolve({ name:file.name, mimeType:file.type, dataBase64:reader.result });
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function collectFilters(){
-    const fDate = document.getElementById('fDate').value;
-    const fFrom = document.getElementById('fFrom').value;
-    const fTo = document.getElementById('fTo').value;
-    return {
-      date: fDate || '',
-      fromDate: fFrom || '',
-      toDate: fTo || '',
-      branch: val('fBranch'), bankName: val('fBank'), taName: val('fTA'), acManagerName: val('fAC'),
-      status: val('fStatus'), riskLevel: val('fRisk'), proofStatus: val('fProof'), reasonMissing: val('fReason'), search: val('fSearch')
-    };
-  }
-
-  function loadDashboard(silent){
-    if(!silent) showLoader(true);
-    apiCall('getDashboardData', collectFilters())
-      .then(res=>{
-        showLoader(false);
-        STATE.dashboard = res;
-        renderDashboard();
-      })
-      .catch(err=>{ showLoader(false); toast(err.message || err,'error'); });
-  }
-
-  function clearFilters(){
-    ['fFrom','fTo','fSearch'].forEach(id=>document.getElementById(id).value='');
-    ['fBranch','fBank','fTA','fAC','fStatus','fRisk','fProof','fReason'].forEach(id=>document.getElementById(id).value='All');
-    document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
-    loadDashboard();
-  }
-
-  function renderDashboard(){
-    const d = STATE.dashboard; if(!d) return;
-    renderSummary(d.summary);
-    renderCharts(d.chartData);
-    renderCompletion(d.completionRows || []);
-    renderHighRisk(d.highRiskRows || []);
-    renderAllRows(d.rows || []);
-    document.getElementById('printMeta').textContent = `${STATE.settings.CompanyName || 'ANIK'} | Period: ${d.fromDate} to ${d.toDate} | Generated: ${d.generatedAt}`;
-    const riskCounts = (d.chartData.riskCounts||[]).reduce((a,x)=>{a[x.label]=x.value;return a;},{});
-    document.getElementById('homeLow').textContent = riskCounts.Low || 0;
-    document.getElementById('homeMedium').textContent = riskCounts.Medium || 0;
-    document.getElementById('homeHigh').textContent = riskCounts.High || 0;
-    document.getElementById('homeCritical').textContent = riskCounts.Critical || 0;
-  }
-
-  function renderSummary(s){
-    const cards = [
-      ['Total Branches',s.TotalBranches,'Master branches','blue',''],
-      ['Total Bank Accounts',s.TotalBankAccounts,'Active banks','blue',''],
-      ['TA Expected Reports',s.TotalExpectedTAReports,'As per bank master','blue',''],
-      ['TA Done',s.TAReportsDone,'Click to see done','green','taDone'],
-      ['TA Pending',s.TAReportsPending,'Click to see pending','orange','taPending'],
-      ['AC Done',s.ACReportsDone,'Bank balance updated','green','acDone'],
-      ['AC Pending',s.ACReportsPending,'Pending bank balance','orange','acPending'],
-      ['System Matched',s.MatchedCount,'TA marked Yes','green','matched'],
-      ['System No Match',s.NotMatchedCount,'Reason required','red','notMatched'],
-      ['Review Count',s.HighRiskCount,'Need follow-up','red','high'],
-      ['Senior Review',s.CriticalRiskCount,'Urgent attention','darkred','critical'],
-      ['Missing Reason',s.MissingReasonCount,'Click to filter','orange','missingReason'],
-      ['Pending After Cut-off',s.PendingAfterCutoff,'Escalation needed','darkred','afterCutoff']
-    ];
-    document.getElementById('summaryGrid').innerHTML = cards.map(c=>`<div class="metric ${c[3]}" onclick="cardFilter('${c[4]}')"><div class="label">${esc(c[0])}</div><div class="value">${esc(c[1])}</div><div class="sub">${esc(c[2])}</div></div>`).join('');
-  }
-
-  function cardFilter(type){
-    if(!type) return;
-    if(type==='matched') setVal('fStatus','System Matched');
-    if(type==='notMatched') setVal('fStatus','System No Match');
-    if(type==='high') setVal('fRisk','High');
-    if(type==='critical') setVal('fRisk','Critical');
-    if(type==='missingReason') setVal('fReason','Yes');
-    if(type==='taPending' || type==='acPending' || type==='afterCutoff') setVal('fStatus','All');
-    loadDashboard();
-    showPanel('dashboard');
-  }
-
-  function renderCharts(c){
-    drawDonut('chartStatus', c.statusCounts || [], 'legendStatus');
-    drawBar('chartBranch', c.branchMismatchAmount || [], 'legendBranch', false);
-    drawBar('chartBank', c.bankRiskCount || [], 'legendBank', false);
-    drawLine('chartTrend', c.dailyTrend || [], 'legendTrend');
-    drawStaff('chartStaff', c.staffCompletion || [], 'legendStaff');
-    drawDonut('chartRisk', c.riskCounts || [], 'legendRisk');
-  }
-
-  function renderCompletion(rows){
-    const headers = ['Date','Branch','Bank','TA Name','TA Status','System Match','Reason','TA Proof','AC Manager','AC Status','AC Time','AC Proof','Review'];
-    const htmlRows = rows.map(r=>`<tr>
-      <td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.ExpectedTAName)}</td>
-      <td>${badge(r.TAReportStatus)}</td><td>${badge(r.FinalStatus)}</td><td>${esc(r.ReasonIfNotMatched || '-')}</td><td>${proof(r.TAProofURL,r.TAProofStatus)}</td>
-      <td>${esc(r.ACManagerName)}</td><td>${badge(r.ACReportStatus)}</td><td>${esc(r.ACSubmittedTime)}</td><td>${proof(r.ACProofURL,r.ACProofStatus)}</td><td>${badge(r.RiskLevel)}</td></tr>`).join('');
-    document.getElementById('tabCompletion').innerHTML = tableHtml('Daily Status - Done / Pending / Review', headers, htmlRows, rows.length);
-  }
-
-  function renderHighRisk(rows){
-    const headers = ['Date','Branch','Bank','TA Name','System Balance','System Match','Reason','AC Manager','AC Balance','TA Proof','AC Proof','Last Updated','Action Required'];
-    const htmlRows = rows.map(r=>`<tr>
-      <td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.TAName)}</td>
-      <td class="num">${money(r.TASystemBalance)}</td><td>${badge(r.MatchStatus)}</td><td>${esc(r.ReasonIfNotMatched || '-')}</td>
-      <td>${esc(r.ACManagerName)}</td><td class="num">${money(r.ACBankBalance)}</td><td>${proof(r.TAProofURL,r.TAProofStatus)}</td><td>${proof(r.ACProofURL,r.ACProofStatus)}</td><td>${esc(r.LastUpdatedTime)}</td><td><b>${esc(r.ActionRequired)}</b></td></tr>`).join('');
-    document.getElementById('tabHighrisk').innerHTML = tableHtml('Review Required', headers, htmlRows, rows.length);
-  }
-
-  function renderAllRows(rows){
-    const headers = ['Date','Branch','Bank','TA Name','TA Balance','TA Status','System Match','Reason','AC Manager','AC Balance','AC Status','Proof','Cut-off','Action'];
-    const htmlRows = rows.map(r=>`<tr>
-      <td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.TAName)}</td>
-      <td class="num">${money(r.TASystemBalance)}</td><td>${badge(r.TAReportStatus)}</td><td>${badge(r.MatchStatus)}</td><td>${esc(r.ReasonIfNotMatched || '-')}</td>
-      <td>${esc(r.ACManagerName)}</td><td class="num">${money(r.ACBankBalance)}</td><td>${badge(r.ACReportStatus)}</td><td>${esc(r.ProofStatus)}</td><td>${badge(r.CutOffStatus)}</td><td>${esc(r.ActionRequired)}</td></tr>`).join('');
-    document.getElementById('tabAllrows').innerHTML = tableHtml('Full Daily Balance Report', headers, htmlRows, rows.length);
-  }
-
-  function tableHtml(title, headers, rowsHtml, count){
-    return `<div class="card-title"><h3>${esc(title)} <span class="muted">(${count})</span></h3></div><div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rowsHtml || `<tr><td colspan="${headers.length}" class="muted">No data found.</td></tr>`}</tbody></table></div>`;
-  }
-
-  function setDashTab(tab, btn){
-    STATE.activeTab = tab;
-    document.querySelectorAll('.section-tabs button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tabCompletion').style.display = tab==='completion'?'block':'none';
-    document.getElementById('tabHighrisk').style.display = tab==='highrisk'?'block':'none';
-    document.getElementById('tabAllrows').style.display = tab==='allrows'?'block':'none';
-  }
-
-  function exportCSV(type){
-    const d = STATE.dashboard; if(!d) return;
-    let rows = d.rows || [], name = 'ANIK_Full_Report.csv';
-    if(type==='high'){ rows = d.highRiskRows || []; name='ANIK_Review_Report.csv'; }
-    if(type==='pending'){ rows = (d.rows||[]).filter(r=>r.TAReportStatus==='Pending' || r.ACReportStatus==='Pending' || r.MatchStatus==='System No Match'); name='ANIK_Pending_Report.csv'; }
-    if(type==='completion'){ rows = d.completionRows || []; name='ANIK_Staff_Completion_Report.csv'; }
-    if(!rows.length) return toast('No data to export','error');
-    const headers = Object.keys(rows[0]);
-    const csv = '\ufeff' + [headers.join(',')].concat(rows.map(r=>headers.map(h=>csvCell(r[h])).join(','))).join('\n');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href);
-  }
-
-  function drawDonut(id, items, legendId){
-    const cv = setupCanvas(id), ctx = cv.getContext('2d'), w=cv.width,h=cv.height;
-    ctx.clearRect(0,0,w,h);
-    const total = items.reduce((a,x)=>a+Number(x.value||0),0) || 1;
-    let start = -Math.PI/2;
-    const cx=w/2, cy=h/2, r=Math.min(w,h)*.34;
-    items.forEach((it,i)=>{ const val=Number(it.value||0), ang=val/total*Math.PI*2; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,start+ang); ctx.closePath(); ctx.fillStyle=STATUS_COLORS[i%STATUS_COLORS.length]; ctx.fill(); start+=ang; });
-    ctx.beginPath(); ctx.fillStyle='#fff'; ctx.arc(cx,cy,r*.55,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#111827'; ctx.font='bold 22px Arial'; ctx.textAlign='center'; ctx.fillText(total,cx,cy+7);
-    setLegend(legendId, items);
-  }
-
-  function drawBar(id, items, legendId, moneyFlag){
-    const cv = setupCanvas(id), ctx = cv.getContext('2d'), w=cv.width,h=cv.height;
-    ctx.clearRect(0,0,w,h); if(!items.length){emptyChart(ctx,w,h); setLegend(legendId,[]); return;}
-    const max = Math.max(...items.map(x=>Number(x.value||0)),1), pad=32, barW=(w-pad*2)/items.length*.62;
-    items.forEach((it,i)=>{ const x=pad+i*((w-pad*2)/items.length)+barW*.3; const bh=(h-55)*Number(it.value||0)/max; ctx.fillStyle=STATUS_COLORS[i%STATUS_COLORS.length]; roundRect(ctx,x,h-32-bh,barW,bh,7,true); ctx.fillStyle='#344054'; ctx.font='11px Arial'; ctx.textAlign='center'; ctx.fillText(short(it.label,10),x+barW/2,h-12); });
-    setLegend(legendId, items.map(x=>({label:x.label,value:moneyFlag?money(x.value):x.value})));
-  }
-
-  function drawLine(id, items, legendId){
-    const cv = setupCanvas(id), ctx = cv.getContext('2d'), w=cv.width,h=cv.height;
-    ctx.clearRect(0,0,w,h); if(!items.length){emptyChart(ctx,w,h); setLegend(legendId,[]); return;}
-    const vals = items.map(x=>Number(x.amount||0)); const max=Math.max(...vals,1); const pad=34; const step=(w-pad*2)/Math.max(items.length-1,1);
-    ctx.strokeStyle='#E5E7EB'; ctx.lineWidth=1; for(let i=0;i<4;i++){let y=20+i*(h-60)/3;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
-    ctx.beginPath(); ctx.strokeStyle='#C62828'; ctx.lineWidth=3;
-    items.forEach((it,i)=>{ const x=pad+i*step; const y=h-35-(Number(it.amount||0)/max)*(h-60); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke();
-    items.forEach((it,i)=>{ const x=pad+i*step; const y=h-35-(Number(it.amount||0)/max)*(h-60); ctx.fillStyle='#0B3D91'; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill(); });
-    setLegend(legendId, items.slice(-5).map(x=>({label:x.label,value:money(x.amount)})));
-  }
-
-  function drawStaff(id, items, legendId){
-    const cv = setupCanvas(id), ctx = cv.getContext('2d'), w=cv.width,h=cv.height;
-    ctx.clearRect(0,0,w,h); if(!items.length){emptyChart(ctx,w,h); setLegend(legendId,[]); return;}
-    const max=Math.max(...items.map(x=>Number(x.done||0)+Number(x.pending||0)),1), pad=35, group=(w-pad*2)/items.length;
-    items.forEach((it,i)=>{ const x=pad+i*group+group*.2, bw=group*.22; const doneH=(h-55)*Number(it.done||0)/max, pendH=(h-55)*Number(it.pending||0)/max; ctx.fillStyle='#0F9F6E'; roundRect(ctx,x,h-32-doneH,bw,doneH,6,true); ctx.fillStyle='#F59E0B'; roundRect(ctx,x+bw+3,h-32-pendH,bw,pendH,6,true); ctx.fillStyle='#344054'; ctx.font='10px Arial'; ctx.textAlign='center'; ctx.fillText(short(it.label,8),x+bw,h-12); });
-    setLegend(legendId, items.map(x=>({label:x.label,value:`Done ${x.done} / Pending ${x.pending}`})));
-  }
-
-  function setupCanvas(id){
-    const cv=document.getElementById(id); const rect=cv.getBoundingClientRect(); const ratio=window.devicePixelRatio||1; cv.width=rect.width*ratio; cv.height=190*ratio; cv.getContext('2d').scale(ratio,ratio); return {width:rect.width,height:190,getContext:()=>cv.getContext('2d')};
-  }
-  function emptyChart(ctx,w,h){ctx.fillStyle='#98A2B3';ctx.font='14px Arial';ctx.textAlign='center';ctx.fillText('No data',w/2,h/2)}
-  function setLegend(id, items){ document.getElementById(id).innerHTML = items.length ? items.map((x,i)=>`<span style="display:inline-block;width:9px;height:9px;background:${STATUS_COLORS[i%STATUS_COLORS.length]};border-radius:50%;margin-right:5px"></span>${esc(x.label)}: <b>${esc(x.value)}</b>`).join('<br>') : '<span class="muted">No data</span>'; }
-  function roundRect(ctx,x,y,w,h,r,fill){ if(h<0)h=0; ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); if(fill)ctx.fill(); }
-
-  function badge(v){ const cls=String(v||'').replace(/\s+/g,'').replace(/-/g,''); return `<span class="badge ${cls} ${esc(v)}">${esc(v||'-')}</span>`; }
-  function proof(url,status){ return url ? `<a class="proof-link" href="${esc(url)}" target="_blank">View</a>` : `<span class="muted">${esc(status||'Optional')}</span>`; }
-  function money(v){ if(v===null || v===undefined || v==='') return '-'; const n=Number(v); if(isNaN(n)) return v; return '₹' + n.toLocaleString('en-IN',{maximumFractionDigits:2}); }
-  function val(id){ return document.getElementById(id).value; }
-  function setVal(id,v){ document.getElementById(id).value=v; }
-  function esc(s){ return String(s===null||s===undefined?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
-  function csvCell(v){ const s=String(v===null||v===undefined?'':v).replace(/"/g,'""'); return `"${s}"`; }
-  function short(s,n){ s=String(s||''); return s.length>n?s.slice(0,n-1)+'…':s; }
-  function dmyToYmd(s){ if(!s) return ''; const p=String(s).split('-'); return p.length===3 ? `${p[2]}-${p[1]}-${p[0]}` : s; }
-  function ymdToDmy(s){ if(!s) return ''; const p=String(s).split('-'); return p.length===3 ? `${p[2]}-${p[1]}-${p[0]}` : s; }
+  function collectFilters(){ return {date:val('fDate'),branch:val('fBranch'),bankName:val('fBank'),taName:val('fTA'),acManagerName:val('fAC'),status:val('fStatus'),riskLevel:val('fRisk'),reasonMissing:val('fReason'),search:val('fSearch')}; }
+  function loadDashboard(silent){ if(!silent)setStatus('dashStatus','Loading dashboard...'); apiCall('getDashboardData',collectFilters(),60000).then(res=>{STATE.dashboard=res; setStatus('dashStatus','Updated: '+(res.generatedAt||'')); renderDashboard();}).catch(e=>{setStatus('dashStatus','Dashboard loading failed: '+(e.message||e)); toast(e.message||e,'error');}); }
+  function clearFilters(){ ['fBranch','fBank','fTA','fAC','fStatus','fRisk','fReason'].forEach(id=>document.getElementById(id).value='All'); document.getElementById('fSearch').value=''; document.getElementById('fDate').value=new Date().toISOString().slice(0,10); loadDashboard(); }
+  function renderDashboard(){ const d=STATE.dashboard||{}, s=d.summary||{}; renderSummary(s); renderHome(s); renderCompletion(d.completionRows||[]); renderReview(d.highRiskRows||[]); renderAll(d.rows||[]); document.getElementById('printMeta').textContent='Generated: '+(d.generatedAt||''); }
+  function renderHome(s){ document.getElementById('homeSummary').innerHTML=`<div class="metric green"><div class="label">TA Done</div><div class="value">${esc(s.TAReportsDone??'-')}</div><div class="sub">Submitted</div></div><div class="metric orange"><div class="label">TA Pending</div><div class="value">${esc(s.TAReportsPending??'-')}</div><div class="sub">Follow-up</div></div><div class="metric green"><div class="label">AC Done</div><div class="value">${esc(s.ACReportsDone??'-')}</div><div class="sub">Bank update</div></div><div class="metric red"><div class="label">Review</div><div class="value">${esc(s.NotMatchedCount??'-')}</div><div class="sub">System No Match</div></div>`; }
+  function renderSummary(s){ const cards=[['Branches',s.TotalBranches,'Active branches',''],['Bank Accounts',s.TotalBankAccounts,'Active banks',''],['TA Expected',s.TotalExpectedTAReports,'Daily branch bank rows',''],['TA Done',s.TAReportsDone,'Submitted','green'],['TA Pending',s.TAReportsPending,'Not submitted','orange'],['AC Done',s.ACReportsDone,'Updated','green'],['AC Pending',s.ACReportsPending,'Not updated','orange'],['System Matched',s.MatchedCount,'TA marked Yes','green'],['System No Match',s.NotMatchedCount,'Reason required','red'],['Reason Missing',s.MissingReasonCount,'Need follow-up','red'],['After Cut-off',s.PendingAfterCutoff,'Pending after time','orange']]; document.getElementById('summaryGrid').innerHTML=cards.map(c=>`<div class="metric ${c[3]}"><div class="label">${esc(c[0])}</div><div class="value">${esc(c[1]??0)}</div><div class="sub">${esc(c[2])}</div></div>`).join(''); }
+  function renderCompletion(rows){ const h=['Date','Branch','Bank','TA Name','TA Status','System Match','Reason','AC Manager','AC Status','AC Time']; const body=rows.map(r=>`<tr><td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.ExpectedTAName)}</td><td>${badge(r.TAReportStatus)}</td><td>${badge(r.FinalStatus)}</td><td>${esc(r.ReasonIfNotMatched||'-')}</td><td>${esc(r.ACManagerName)}</td><td>${badge(r.ACReportStatus)}</td><td>${esc(r.ACSubmittedTime)}</td></tr>`).join(''); document.getElementById('tabCompletion').innerHTML=tableHtml('Daily Done / Pending Status',h,body,rows.length); }
+  function renderReview(rows){ const h=['Date','Branch','Bank','TA Name','System Match','Reason','AC Status','Action Required']; const body=rows.map(r=>`<tr><td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.TAName)}</td><td>${badge(r.MatchStatus)}</td><td>${esc(r.ReasonIfNotMatched||'-')}</td><td>${badge(r.ACReportStatus)}</td><td><b>${esc(r.ActionRequired)}</b></td></tr>`).join(''); document.getElementById('tabReview').innerHTML=tableHtml('Review Required',h,body,rows.length); }
+  function renderAll(rows){ const h=['Date','Branch','Bank','TA Name','TA Balance','TA Status','System Match','Reason','AC Manager','AC Balance','AC Status','Updated']; const body=rows.map(r=>`<tr><td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.TAName)}</td><td class="num">${money(r.TASystemBalance)}</td><td>${badge(r.TAReportStatus)}</td><td>${badge(r.MatchStatus)}</td><td>${esc(r.ReasonIfNotMatched||'-')}</td><td>${esc(r.ACManagerName)}</td><td class="num">${money(r.ACBankBalance)}</td><td>${badge(r.ACReportStatus)}</td><td>${esc(r.LastUpdatedTime)}</td></tr>`).join(''); document.getElementById('tabAll').innerHTML=tableHtml('Full Daily Report',h,body,rows.length); }
+  function tableHtml(title,headers,rows,count){ return `<div class="card-title"><h3>${esc(title)} <span class="muted">(${count})</span></h3></div><div class="table-wrap"><table><thead><tr>${headers.map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="muted">No data found.</td></tr>`}</tbody></table></div>`; }
+  function setDashTab(tab,btn){ document.querySelectorAll('.section-tabs button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('tabCompletion').style.display=tab==='completion'?'block':'none'; document.getElementById('tabReview').style.display=tab==='review'?'block':'none'; document.getElementById('tabAll').style.display=tab==='all'?'block':'none'; }
+  function exportCSV(type){ const d=STATE.dashboard;if(!d)return; let rows=type==='review'?(d.highRiskRows||[]):(d.rows||[]), name=type==='review'?'ANIK_Review_Report.csv':'ANIK_Full_Report.csv'; if(!rows.length)return toast('No data to export','error'); const headers=Object.keys(rows[0]); const csv='\ufeff'+[headers.join(',')].concat(rows.map(r=>headers.map(h=>csvCell(r[h])).join(','))).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
+  function badge(v){ const cls=String(v||'').replace(/\s+/g,'').replace(/-/g,''); return `<span class="badge ${cls}">${esc(v||'-')}</span>`; }
+  function money(v){ if(v===null||v===undefined||v==='')return '-'; const n=Number(v); return isNaN(n)?esc(v):'₹'+n.toLocaleString('en-IN',{maximumFractionDigits:2}); }
+  function val(id){ return document.getElementById(id).value; } function setStatus(id,msg){ const el=document.getElementById(id); if(el)el.textContent=msg; } function showPageLoader(flag,msg){ const l=document.getElementById('pageLoader'); if(msg)l.querySelector('p').textContent=msg; l.style.display=flag?'flex':'none'; }
   function toast(msg,type){ const t=document.getElementById('toast'); t.textContent=msg; t.className='toast '+(type||''); t.style.display='block'; setTimeout(()=>t.style.display='none',4500); }
-  function showLoader(flag){ document.getElementById('loader').style.display=flag?'flex':'none'; }
-  function debounce(fn,ms){ let t; return function(){ clearTimeout(t); t=setTimeout(fn,ms); }; }
+  function esc(s){ return String(s===null||s===undefined?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); } function escAttr(s){ return esc(s).replace(/'/g,'&#39;'); }
+  function csvCell(v){ return '"'+String(v===null||v===undefined?'':v).replace(/"/g,'""')+'"'; }
+  function dmyToYmd(s){ if(!s)return''; const p=String(s).split('-'); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:s; }
+  function debounce(fn,ms){ let t; return function(){clearTimeout(t);t=setTimeout(fn,ms);}; }
 </script>
 </body>
 </html>
