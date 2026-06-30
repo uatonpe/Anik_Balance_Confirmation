@@ -1,96 +1,428 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANIK Balance Control</title>
-  <style>
-    :root{--blue:#0B3D91;--red:#C62828;--bg:#F4F7FB;--card:#fff;--text:#111827;--muted:#667085;--line:#E5E7EB;--green:#079455;--orange:#DC6803;--shadow:0 12px 28px rgba(17,24,39,.08);--radius:18px}
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;font-size:15px}.header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--blue),#082b68);border-bottom:4px solid var(--red);color:#fff;box-shadow:0 8px 24px rgba(11,61,145,.25)}.head-inner{max-width:1480px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:12px}.logo{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:14px;padding:6px}.brand h1{font-size:20px;line-height:1.15;margin:0}.brand p{font-size:12px;margin:4px 0 0;opacity:.9}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav button,.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;background:#fff;color:var(--blue)}.btn.primary{background:var(--blue);color:#fff}.btn.red{background:var(--red);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.ghost{background:#EEF4FF;color:var(--blue)}.btn.dark{background:#111827;color:#fff}.btn.small{padding:7px 10px;font-size:12px;border-radius:10px}.btn[disabled]{opacity:.65;cursor:not-allowed}.wrap{max-width:1480px;margin:0 auto;padding:18px}.panel{display:none}.panel.active{display:block}.hero{background:linear-gradient(135deg,#fff,#EEF4FF);border:1px solid #DCE7FF;border-radius:24px;padding:24px;box-shadow:var(--shadow);display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin-bottom:18px}.hero h2{margin:0 0 8px;color:var(--blue);font-size:30px}.hero p{margin:0;color:var(--muted);line-height:1.6}.badge-top{display:inline-flex;background:#FEF2F2;color:var(--red);padding:7px 12px;border-radius:999px;font-size:12px;font-weight:900;margin-bottom:10px}.option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.option-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow);cursor:pointer;transition:.18s;min-height:150px}.option-card:hover{transform:translateY(-3px);border-color:#BFD2FF}.option-icon{width:56px;height:56px;border-radius:18px;background:#EEF4FF;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900}.option-card.red .option-icon{background:#FEF2F2;color:var(--red)}.option-card h3{margin:13px 0 6px;font-size:20px}.option-card p{margin:0;color:var(--muted);line-height:1.45}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.card-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.card-title h2,.card-title h3{margin:0;color:var(--blue)}.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:13px;font-weight:800;color:#344054}.field input,.field select,.field textarea{width:100%;border:1px solid #D0D5DD;border-radius:12px;padding:10px 11px;font-size:14px;background:#fff;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,61,145,.1)}.readonly{background:#F9FAFB!important;color:#475467}.required{color:var(--red)}.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}.notice{border:1px solid #DCE7FF;background:#F8FBFF;border-radius:14px;padding:12px;color:#344054;line-height:1.5;margin-bottom:14px}.status{font-size:13px;color:var(--muted);font-weight:700;margin-top:8px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:#fff}table{border-collapse:collapse;width:100%;min-width:980px}th,td{padding:10px 11px;border-bottom:1px solid #EEF2F6;text-align:left;font-size:13px;vertical-align:top}th{background:#F8FAFC;color:#344054;font-size:12px;text-transform:uppercase;position:sticky;top:0}tr:hover td{background:#FBFDFF}.batch-table input,.batch-table select{min-width:130px}.batch-table textarea{min-width:210px;min-height:40px;resize:vertical}.num{text-align:right}.summary-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.metric{background:#fff;border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(17,24,39,.05);min-height:90px}.metric.green{border-left-color:var(--green)}.metric.orange{border-left-color:var(--orange)}.metric.red{border-left-color:var(--red)}.metric .label{color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase}.metric .value{font-size:26px;font-weight:900;margin-top:7px}.metric .sub{font-size:12px;color:var(--muted);margin-top:3px}.filters{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;white-space:nowrap}.badge.Done,.badge.Complete,.badge.SystemMatched,.badge.Clear{background:#ECFDF3;color:#027A48}.badge.Pending,.badge.TAPending,.badge.ACManagerPending,.badge.BothPending,.badge.BeforeCutoff{background:#FFFAEB;color:#B54708}.badge.SystemNoMatch,.badge.ReviewRequired,.badge.Missing,.badge.AfterCutoff{background:#FEF3F2;color:#B42318}.muted{color:var(--muted)}.row-error{outline:2px solid #FCA5A5!important}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid #D0D5DD;background:#fff;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer}.tabs button.active{background:var(--blue);color:white;border-color:var(--blue)}.toast{position:fixed;right:18px;bottom:18px;background:#111827;color:#fff;padding:13px 15px;border-radius:14px;box-shadow:0 15px 38px rgba(0,0,0,.28);display:none;max-width:460px;z-index:100}.toast.success{background:#027A48}.toast.error{background:#B42318}.signature{display:none;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}.signature div{border-top:1px solid #111827;text-align:center;padding-top:8px;font-weight:800}.print-title{display:none}
-    @media(max-width:1200px){.summary-grid{grid-template-columns:repeat(3,1fr)}.filters,.form-grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.option-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:760px){.head-inner{flex-direction:column;align-items:flex-start}.brand h1{font-size:17px}.wrap{padding:12px}.option-grid,.summary-grid,.filters,.form-grid{grid-template-columns:1fr}.hero h2{font-size:24px}.nav{width:100%}}
-    @media print{.header,.nav,.form-actions,.filters,.tabs,.toast,.no-print{display:none!important}.wrap{max-width:none;padding:0}.card,.metric{box-shadow:none;border-color:#ddd}.print-title{display:block;text-align:center}.signature{display:grid!important}body{background:#fff}table{min-width:auto}th,td{font-size:10px;padding:6px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anik Fin - Banking Balance System</title>
+    <style>
+        :root {
+            --primary-color: #0d233a;
+            --accent-color: #cca43b;
+            --success-color: #2ec4b6;
+            --danger-color: #e71d36;
+            --light-bg: #f8f9fa;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: #333;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .logo {
+            height: 45px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #173d63;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-match {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-gap {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #selection-screen, #app-screen {
+            display: none;
+        }
+
+        .active {
+            display: block !important;
+        }
+    </style>
 </head>
 <body>
-  <div class="toast" id="toast"></div>
-  <header class="header">
-    <div class="head-inner">
-      <div class="brand"><img id="brandLogo" class="logo" src="ANIK_logo.png" alt="ANIK"><div><h1>ANIK Financial Services Pvt. Ltd.</h1><p>Balance Control Dashboard</p></div></div>
-      <div class="nav"><button onclick="showPanel('home')">Home</button><button onclick="showPanel('ta')">TA Update</button><button onclick="showPanel('ac')">AC Manager</button><button onclick="openDashboard()">Dashboard</button></div>
+
+    <header>
+        <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Logo" class="logo">
+        <span id="user-info" style="color: white; font-weight: bold;"></span>
+    </header>
+
+    <div class="container">
+        <div id="loading" class="loader"></div>
+
+        <!-- Selection Screen (No Password) -->
+        <div id="selection-screen" class="card active">
+            <h2>तुमचे प्रोफाइल निवडा</h2>
+            <div class="form-group">
+                <label for="user-select">वापरकर्ता (Select User)</label>
+                <select id="user-select" onchange="onUserSelected()">
+                    <option value="">-- निवडा --</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Main App Screen -->
+        <div id="app-screen">
+            <!-- Admin View -->
+            <div id="admin-view" class="card" style="display:none;">
+                <h2>अ‍ॅडमिन डॅशबोर्ड (Admin Dashboard)</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>वेळ</th>
+                                <th>बँक</th>
+                                <th>युनिट</th>
+                                <th>सिस्टम बॅलन्स</th>
+                                <th>स्टेटमेंट बॅलन्स</th>
+                                <th>तफावत (Gap)</th>
+                                <th>कारण</th>
+                                <th>अपडेट करणारा</th>
+                                <th>स्टेटस</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body">
+                            <!-- Data -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Accountant / Manager View -->
+            <div id="entry-view" class="card" style="display:none;">
+                <h2 id="entry-title">बॅलन्स अपडेट फॉर्म</h2>
+                <form id="balance-form" onsubmit="submitForm(event)">
+                    <div class="form-group">
+                        <label for="bank-select">बँक निवडा</label>
+                        <select id="bank-select" required></select>
+                    </div>
+                    <div class="form-group" id="unit-group">
+                        <label for="unit-input">युनिटचे नाव</label>
+                        <input type="text" id="unit-input" placeholder="उदा. Unit A">
+                    </div>
+                    <div class="form-group">
+                        <label for="system-bal">सिस्टम बॅलन्स (System Balance)</label>
+                        <input type="number" step="0.01" id="system-bal" oninput="calculateGap()" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="statement-bal">स्टेटमेंट बॅलन्स (Statement Balance)</label>
+                        <input type="number" step="0.01" id="statement-bal" oninput="calculateGap()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>तफावत (Gap)</label>
+                        <input type="number" id="gap-display" readonly style="background:#e9ecef; font-weight:bold;">
+                    </div>
+                    <div class="form-group" id="reason-group" style="display:none;">
+                        <label for="gap-reason" style="color:var(--danger-color);">तफावत असण्याचे कारण स्पष्ट लिहा *</label>
+                        <textarea id="gap-reason" rows="3" placeholder="कारणाची नोंद करा..."></textarea>
+                    </div>
+                    <button type="submit">माहिती सबमिट करा</button>
+                </form>
+            </div>
+            
+            <button onclick="logout()" style="background-color: #6c757d; margin-top: 15px;">मागे जा / युझर बदला</button>
+        </div>
     </div>
-  </header>
 
-  <main class="wrap">
-    <section id="home" class="panel active">
-      <div class="hero">
-        <div><span class="badge-top">ANIK OFFICE SYSTEM</span><h2>Daily Balance Confirmation</h2><p>TA and AC Manager updates are separate. Fill all required bank rows and save once. Page opens instantly; sheet data loads only when needed.</p><div class="option-grid"><div class="option-card" onclick="showPanel('ta')"><div class="option-icon">TA</div><h3>TA Balance Update</h3><p>Branch-wise bank software balance in single submit.</p></div><div class="option-card red" onclick="showPanel('ac')"><div class="option-icon">₹</div><h3>AC Manager Update</h3><p>All bank balances in single submit.</p></div><div class="option-card" onclick="openDashboard()"><div class="option-icon">DB</div><h3>Dashboard</h3><p>Done, pending and review entries at one glance.</p></div></div></div>
-        <div class="card" style="margin:0"><div class="card-title"><h3>Today Status</h3></div><div id="homeSummary" class="summary-grid" style="grid-template-columns:repeat(2,1fr)"></div><div id="connectStatus" class="status">Ready.</div></div>
-      </div>
-    </section>
+    <script>
+        // तुमची गुगल स्क्रिप्टची URL येथे टाका
+        const API_URL = "https://script.google.com/macros/s/AKfycbwbuSo0mK1eQHfrfyughT_Vkzt9-OexfRE3KVGVMI0fghv7mwyl3SbWAbl-MaOGvIvp/exec";
 
-    <section id="ta" class="panel">
-      <div class="card"><div class="card-title"><h2>TA Daily Software Balance Update</h2><button class="btn ghost no-print" onclick="resetTAForm()">Clear</button></div><div class="notice">Select TA name once. Banks for that TA branch will appear below. Proof is optional. If Match = No, reason is compulsory.</div>
-        <form id="taForm"><div class="form-grid"><div class="field"><label>Date <span class="required">*</span></label><input type="date" id="taDate" required></div><div class="field"><label>TA Name <span class="required">*</span></label><select id="taName" required onchange="onTAChange(true)"></select></div><div class="field"><label>Branch</label><input id="taBranch" class="readonly" readonly></div><div class="field"><label>Total Banks</label><input id="taBankCount" class="readonly" readonly></div></div><div id="taBatchTable" style="margin-top:14px"></div><div class="form-actions no-print"><button id="taSubmitBtn" class="btn primary" type="submit">Submit All TA Updates</button><button class="btn ghost" type="button" onclick="openDashboard()">Open Dashboard</button><span id="taStatus" class="status"></span></div></form>
-      </div>
-    </section>
+        let appData = { users: [], transactions: [] };
+        let currentUser = null;
 
-    <section id="ac" class="panel">
-      <div class="card"><div class="card-title"><h2>AC Manager Daily Bank Balance Update</h2><button class="btn ghost no-print" onclick="resetACForm()">Clear</button></div><div class="notice">Select AC Manager name once. All active bank accounts will appear below. Proof is optional.</div>
-        <form id="acForm"><div class="form-grid"><div class="field"><label>Date <span class="required">*</span></label><input type="date" id="acDate" required></div><div class="field"><label>AC Manager Name <span class="required">*</span></label><select id="acName" required></select></div><div class="field"><label>Total Banks</label><input id="acBankCount" class="readonly" readonly></div></div><div id="acBatchTable" style="margin-top:14px"></div><div class="form-actions no-print"><button id="acSubmitBtn" class="btn red" type="submit">Submit All AC Updates</button><button class="btn ghost" type="button" onclick="openDashboard()">Open Dashboard</button><span id="acStatus" class="status"></span></div></form>
-      </div>
-    </section>
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+        });
 
-    <section id="dashboard" class="panel">
-      <div class="print-title"><h2>ANIK Balance Control Dashboard</h2><p id="printMeta"></p></div>
-      <div class="card no-print"><div class="card-title"><h2>Dashboard Filters</h2><div><button id="refreshBtn" class="btn primary small" onclick="loadDashboard()">Refresh</button> <button class="btn ghost small" onclick="clearFilters()">Clear</button></div></div><div class="filters"><div class="field"><label>Date</label><input type="date" id="fDate"></div><div class="field"><label>Branch</label><select id="fBranch"></select></div><div class="field"><label>Bank</label><select id="fBank"></select></div><div class="field"><label>TA Name</label><select id="fTA"></select></div><div class="field"><label>AC Manager</label><select id="fAC"></select></div><div class="field"><label>Status</label><select id="fStatus"><option>All</option><option>Complete</option><option>System Matched</option><option>System No Match</option><option>TA Pending</option><option>AC Manager Pending</option><option>Both Pending</option></select></div><div class="field"><label>Review</label><select id="fReview"><option>All</option><option>Clear</option><option>Review Required</option></select></div><div class="field"><label>Search</label><input id="fSearch" placeholder="Search"></div></div></div>
-      <div class="card"><div class="card-title"><h2>Admin Dashboard - One Glance Summary</h2><div class="no-print"><button class="btn dark small" onclick="window.print()">Print</button> <button class="btn green small" onclick="exportCSV('full')">Export Full CSV</button> <button class="btn red small" onclick="exportCSV('review')">Review CSV</button></div></div><div id="dashStatus" class="status" style="margin-bottom:12px">Open dashboard to load today data.</div><div class="summary-grid" id="summaryGrid"></div></div>
-      <div class="card"><div class="tabs no-print"><button class="active" onclick="setDashTab('completion',this)">Done / Pending</button><button onclick="setDashTab('review',this)">Review Required</button><button onclick="setDashTab('all',this)">Full Report</button></div><div id="tabCompletion"></div><div id="tabReview" style="display:none"></div><div id="tabAll" style="display:none"></div><div class="signature"><div>Prepared By</div><div>Checked By</div><div>Approved By</div></div></div>
-    </section>
-  </main>
+        function showLoader(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
 
-<script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwzZsscJFagfiY_5GgsrBzZs2u1TSUrShJoNKJHK5BKBdiMZaNvk4NmBySh7V0ZXpd6/exec';
-  const DEFAULT_MASTERS={users:[{Name:'Riyaz Shaikh',Role:'TA',Branch:'Kallam',ActiveStatus:'Active'},{Name:'Kavita Pawar',Role:'TA',Branch:'Bhoom',ActiveStatus:'Active'},{Name:'Jayashri Kothwale',Role:'TA',Branch:'Washi',ActiveStatus:'Active'},{Name:'Vikas Kudale',Role:'AC Manager',Branch:'All',ActiveStatus:'Active'}],branches:[{BranchName:'Kallam',ActiveStatus:'Active'},{BranchName:'Bhoom',ActiveStatus:'Active'},{BranchName:'Washi',ActiveStatus:'Active'}],banks:[{BankName:'SBI Kallam',BranchName:'Kallam',ActiveStatus:'Active'},{BankName:'SBI Washi',BranchName:'Washi',ActiveStatus:'Active'},{BankName:'SBI Bhoom',BranchName:'Bhoom',ActiveStatus:'Active'},{BankName:'MGB Washi',BranchName:'Washi',ActiveStatus:'Active'},{BankName:'MGB Kallam',BranchName:'Kallam',ActiveStatus:'Active'},{BankName:'MGB Bhoom',BranchName:'Bhoom',ActiveStatus:'Active'},{BankName:'SPMBT Kallam',BranchName:'Kallam',ActiveStatus:'Active'},{BankName:'Lokparyay DCCS',BranchName:'Kallam',ActiveStatus:'Active'}]};
-  const STATE={masters:DEFAULT_MASTERS,settings:{},dashboard:null,connected:false};
-  document.addEventListener('DOMContentLoaded',init);
-  function init(){applyTheme();fillMasters();setDefaultDates();bindEvents();renderTABatchRows();renderACBatchRows();renderHome({});setTimeout(loadMastersSilent,600)}
-  function apiReady(){return API_URL&&!API_URL.includes('PASTE_YOUR')}
-  function loadMastersSilent(){if(!apiReady()){setStatus('connectStatus','Ready. Paste API URL before live use.');return}setStatus('connectStatus','Opening ready. Checking latest master data...');apiGet('getInitialData',{},10000).then(r=>{STATE.connected=true;STATE.masters=r.masters||DEFAULT_MASTERS;STATE.settings=r.settings||{};applyTheme();fillMasters();setDefaultDates(r.today);renderTABatchRows();renderACBatchRows();setStatus('connectStatus','Ready. Master data connected.');}).catch(e=>setStatus('connectStatus','Ready. Master refresh skipped: '+(e.message||e)))}
-  function apiGet(action,payload,timeout){if(!apiReady())return Promise.reject(new Error('Paste Apps Script /exec URL in API_URL.'));return new Promise((resolve,reject)=>{const cb='anik_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);const s=document.createElement('script');const t=setTimeout(()=>{cleanup();reject(new Error('Sheet response slow. Try Refresh again.'));},timeout||12000);window[cb]=res=>{cleanup();if(!res||!res.success)reject(new Error((res&&res.message)||'API error'));else resolve(res.result)};function cleanup(){clearTimeout(t);delete window[cb];if(s.parentNode)s.parentNode.removeChild(s)}s.onerror=()=>{cleanup();reject(new Error('API URL not reachable.'))};const q=new URLSearchParams({action,callback:cb});if(action==='getDashboardData')q.set('filters',JSON.stringify(payload||{}));s.src=API_URL+(API_URL.includes('?')?'&':'?')+q.toString();document.body.appendChild(s)})}
-  function apiPost(action,payload,timeout){if(!apiReady())return Promise.reject(new Error('Paste Apps Script /exec URL in API_URL.'));return new Promise((resolve,reject)=>{const requestId='req_'+Date.now()+'_'+Math.random().toString(36).slice(2);const iframe=document.createElement('iframe');const form=document.createElement('form');const input=document.createElement('input');const timer=setTimeout(()=>{cleanup();reject(new Error('Saving is taking too much time. Please check internet/Apps Script deployment.'));},timeout||30000);iframe.name='anik_api_'+requestId;iframe.style.display='none';form.method='POST';form.action=API_URL+(API_URL.includes('?')?'&':'?')+'iframe=1';form.target=iframe.name;form.style.display='none';input.type='hidden';input.name='request';input.value=JSON.stringify({requestId,action,payload});form.appendChild(input);function onMsg(ev){const d=ev.data||{};if(d.source!=='ANIK_BALANCE_API'||d.requestId!==requestId)return;cleanup();const res=d.response;if(!res||!res.success)reject(new Error((res&&res.message)||'API error'));else resolve(res.result)}function cleanup(){clearTimeout(timer);window.removeEventListener('message',onMsg);setTimeout(()=>{iframe.remove();form.remove()},60)}window.addEventListener('message',onMsg);document.body.appendChild(iframe);document.body.appendChild(form);form.submit()})}
-  function bindEvents(){document.getElementById('taForm').addEventListener('submit',submitTA);document.getElementById('acForm').addEventListener('submit',submitAC);['fDate','fBranch','fBank','fTA','fAC','fStatus','fReview'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(STATE.dashboard)loadDashboard(true)}));document.getElementById('fSearch').addEventListener('input',debounce(()=>{if(STATE.dashboard)loadDashboard(true)},400))}
-  function applyTheme(){const s=STATE.settings||{};if(s.ThemeColorPrimary)document.documentElement.style.setProperty('--blue',s.ThemeColorPrimary);if(s.ThemeColorSecondary)document.documentElement.style.setProperty('--red',s.ThemeColorSecondary);document.getElementById('brandLogo').src=s.LogoURL||'ANIK_logo.png'}
-  function showPanel(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
-  function openDashboard(){showPanel('dashboard');if(!STATE.dashboard)loadDashboard()}
-  function fillMasters(){const u=STATE.masters.users||[],br=STATE.masters.branches||[],ba=STATE.masters.banks||[];fillSelect('taName',u.filter(x=>x.Role==='TA'&&x.ActiveStatus==='Active').map(x=>x.Name),'Select TA');fillSelect('acName',u.filter(x=>x.Role==='AC Manager'&&x.ActiveStatus==='Active').map(x=>x.Name),'Select AC Manager');fillSelect('fBranch',['All'].concat(br.filter(x=>x.ActiveStatus==='Active').map(x=>x.BranchName)));fillSelect('fBank',['All'].concat(ba.filter(x=>x.ActiveStatus==='Active').map(x=>x.BankName)));fillSelect('fTA',['All'].concat(u.filter(x=>x.Role==='TA'&&x.ActiveStatus==='Active').map(x=>x.Name)));fillSelect('fAC',['All'].concat(u.filter(x=>x.Role==='AC Manager'&&x.ActiveStatus==='Active').map(x=>x.Name)));if(!val('taName')&&document.getElementById('taName').options.length>1)document.getElementById('taName').selectedIndex=1;if(!val('acName')&&document.getElementById('acName').options.length>1)document.getElementById('acName').selectedIndex=1;onTAChange(false)}
-  function fillSelect(id,arr,ph){const el=document.getElementById(id);if(!el)return;const old=el.value;el.innerHTML='';if(ph){const o=document.createElement('option');o.value='';o.textContent=ph;el.appendChild(o)}arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o)});if([...el.options].some(o=>o.value===old))el.value=old}
-  function setDefaultDates(todayDMY){const y=todayDMY?dmyToYmd(todayDMY):new Date().toISOString().slice(0,10);['taDate','acDate','fDate'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=y})}
-  function activeBanks(){return(STATE.masters.banks||[]).filter(b=>b.ActiveStatus==='Active')}
-  function onTAChange(render=true){const name=val('taName'),u=(STATE.masters.users||[]).find(x=>x.Name===name);document.getElementById('taBranch').value=u?u.Branch:'';if(render)renderTABatchRows()}
-  function renderTABatchRows(){const branch=val('taBranch');const banks=activeBanks().filter(b=>!branch||b.BranchName===branch);document.getElementById('taBankCount').value=banks.length;const rows=banks.map(b=>`<tr data-bank="${escAttr(b.BankName)}"><td><b>${esc(b.BankName)}</b><div class="muted">${esc(b.BranchName)}</div></td><td><input type="number" step="0.01" class="ta-bal" placeholder="0.00"></td><td><select class="ta-match" onchange="toggleReason(this)"><option value="">Select</option><option>Yes</option><option>No</option></select></td><td><textarea class="ta-reason" placeholder="Reason only if No" style="display:none"></textarea></td><td><input type="file" class="ta-proof" accept="image/*,.pdf"></td><td><textarea class="ta-remarks" placeholder="Optional"></textarea></td></tr>`).join('');document.getElementById('taBatchTable').innerHTML=`<div class="table-wrap"><table class="batch-table"><thead><tr><th>Bank</th><th>Software Balance *</th><th>Match? *</th><th>Reason</th><th>Proof Optional</th><th>Remarks</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="muted">No bank found.</td></tr>'}</tbody></table></div>`}
-  function renderACBatchRows(){const banks=activeBanks();document.getElementById('acBankCount').value=banks.length;const rows=banks.map(b=>`<tr data-bank="${escAttr(b.BankName)}"><td><b>${esc(b.BankName)}</b><div class="muted">${esc(b.BranchName)}</div></td><td><input type="number" step="0.01" class="ac-bal" placeholder="0.00"></td><td><input type="file" class="ac-proof" accept="image/*,.pdf"></td><td><textarea class="ac-remarks" placeholder="Optional"></textarea></td></tr>`).join('');document.getElementById('acBatchTable').innerHTML=`<div class="table-wrap"><table class="batch-table"><thead><tr><th>Bank</th><th>Actual Bank Balance *</th><th>Proof Optional</th><th>Remarks</th></tr></thead><tbody>${rows}</tbody></table></div>`}
-  function toggleReason(sel){const box=sel.closest('tr').querySelector('.ta-reason');box.style.display=sel.value==='No'?'block':'none'}
-  async function submitTA(e){e.preventDefault();clearRowErrors('#taBatchTable');const trs=[...document.querySelectorAll('#taBatchTable tr[data-bank]')];let ok=true,rows=[];for(const tr of trs){const file=tr.querySelector('.ta-proof').files[0];const match=tr.querySelector('.ta-match').value;const reason=tr.querySelector('.ta-reason').value.trim();if(!tr.querySelector('.ta-bal').value){markErr(tr.querySelector('.ta-bal'));ok=false}if(!match){markErr(tr.querySelector('.ta-match'));ok=false}if(match==='No'&&!reason){markErr(tr.querySelector('.ta-reason'));ok=false}if(file&&file.size>3*1024*1024)return toast('Proof file should be below 3 MB. Proof is optional.','error');rows.push({bankName:tr.dataset.bank,systemBalance:tr.querySelector('.ta-bal').value,isMatchedWithSystem:match,reasonIfNo:reason,remarks:tr.querySelector('.ta-remarks').value,proof:file?await readFile(file):null})}if(!ok)return toast('Fill required TA data. Reason is required only for No.','error');if(!confirm('Submit all TA updates now?'))return;setBusy('ta',true,'Saving...');apiPost('submitTABatch',{date:val('taDate'),taName:val('taName'),branch:val('taBranch'),rows},25000).then(r=>{toast(r.message||'TA saved','success');resetTAForm();STATE.dashboard=null;setStatus('taStatus','Saved successfully.')}).catch(e=>toast(e.message||e,'error')).finally(()=>setBusy('ta',false,''))}
-  async function submitAC(e){e.preventDefault();clearRowErrors('#acBatchTable');const trs=[...document.querySelectorAll('#acBatchTable tr[data-bank]')];let ok=true,rows=[];for(const tr of trs){const file=tr.querySelector('.ac-proof').files[0];if(!tr.querySelector('.ac-bal').value){markErr(tr.querySelector('.ac-bal'));ok=false}if(file&&file.size>3*1024*1024)return toast('Proof file should be below 3 MB. Proof is optional.','error');rows.push({bankName:tr.dataset.bank,bankBalance:tr.querySelector('.ac-bal').value,remarks:tr.querySelector('.ac-remarks').value,proof:file?await readFile(file):null})}if(!ok)return toast('Fill actual balance for all banks.','error');if(!confirm('Submit all AC updates now?'))return;setBusy('ac',true,'Saving...');apiPost('submitACBatch',{date:val('acDate'),acManagerName:val('acName'),rows},25000).then(r=>{toast(r.message||'AC saved','success');resetACForm();STATE.dashboard=null;setStatus('acStatus','Saved successfully.')}).catch(e=>toast(e.message||e,'error')).finally(()=>setBusy('ac',false,''))}
-  function setBusy(type,b,msg){const btn=document.getElementById(type+'SubmitBtn');btn.disabled=b;btn.textContent=b?msg:(type==='ta'?'Submit All TA Updates':'Submit All AC Updates');setStatus(type+'Status',msg)}
-  function resetTAForm(){document.querySelectorAll('#taBatchTable input,#taBatchTable textarea').forEach(x=>x.value='');document.querySelectorAll('#taBatchTable select').forEach(x=>x.value='');document.querySelectorAll('.ta-reason').forEach(x=>x.style.display='none')}
-  function resetACForm(){document.querySelectorAll('#acBatchTable input,#acBatchTable textarea').forEach(x=>x.value='')}
-  function clearRowErrors(scope){document.querySelectorAll(scope+' .row-error').forEach(x=>x.classList.remove('row-error'))}function markErr(el){if(el){el.classList.add('row-error');if(el.style.display==='none')el.style.display='block'}}
-  function readFile(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve({name:file.name,mimeType:file.type,dataBase64:r.result});r.onerror=reject;r.readAsDataURL(file)})}
-  function collectFilters(){return{date:val('fDate'),branch:val('fBranch'),bankName:val('fBank'),taName:val('fTA'),acManagerName:val('fAC'),status:val('fStatus'),review:val('fReview'),search:val('fSearch')}}
-  function loadDashboard(silent){setStatus('dashStatus','Loading today data...');document.getElementById('refreshBtn').disabled=true;apiGet('getDashboardData',collectFilters(),15000).then(r=>{STATE.dashboard=r;setStatus('dashStatus','Updated: '+(r.generatedAt||''));renderDashboard()}).catch(e=>{setStatus('dashStatus','Dashboard not loaded: '+(e.message||e));toast(e.message||e,'error')}).finally(()=>document.getElementById('refreshBtn').disabled=false)}
-  function clearFilters(){['fBranch','fBank','fTA','fAC','fStatus','fReview'].forEach(id=>document.getElementById(id).value='All');document.getElementById('fSearch').value='';document.getElementById('fDate').value=new Date().toISOString().slice(0,10);loadDashboard()}
-  function renderDashboard(){const d=STATE.dashboard||{},s=d.summary||{};renderSummary(s);renderHome(s);renderCompletion(d.completionRows||[]);renderReview(d.reviewRows||[]);renderAll(d.rows||[]);document.getElementById('printMeta').textContent='Generated: '+(d.generatedAt||'')}
-  function renderHome(s){document.getElementById('homeSummary').innerHTML=`<div class="metric green"><div class="label">TA Done</div><div class="value">${esc(s.TAReportsDone??'-')}</div><div class="sub">Submitted</div></div><div class="metric orange"><div class="label">TA Pending</div><div class="value">${esc(s.TAReportsPending??'-')}</div><div class="sub">Follow-up</div></div><div class="metric green"><div class="label">AC Done</div><div class="value">${esc(s.ACReportsDone??'-')}</div><div class="sub">Bank update</div></div><div class="metric red"><div class="label">Review</div><div class="value">${esc(s.ReviewRequired??'-')}</div><div class="sub">Need action</div></div>`}
-  function renderSummary(s){const cards=[['Branches',s.TotalBranches,'Active branches',''],['Bank Accounts',s.TotalBankAccounts,'Active banks',''],['TA Expected',s.TotalExpectedTAReports,'Rows for TA',''],['TA Done',s.TAReportsDone,'Submitted','green'],['TA Pending',s.TAReportsPending,'Not submitted','orange'],['AC Done',s.ACReportsDone,'Updated','green'],['AC Pending',s.ACReportsPending,'Not updated','orange'],['System Matched',s.SystemMatched,'TA marked Yes','green'],['System No Match',s.SystemNoMatch,'Reason needed','red'],['Reason Missing',s.ReasonMissing,'Follow-up','red'],['Review Required',s.ReviewRequired,'Check today','red']];document.getElementById('summaryGrid').innerHTML=cards.map(c=>`<div class="metric ${c[3]}"><div class="label">${esc(c[0])}</div><div class="value">${esc(c[1]??0)}</div><div class="sub">${esc(c[2])}</div></div>`).join('')}
-  function renderCompletion(rows){const h=['Date','Branch','Bank','TA Name','TA Status','System Status','Reason','AC Manager','AC Status','AC Time'];const body=rows.map(r=>`<tr><td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.ExpectedTAName)}</td><td>${badge(r.TAReportStatus)}</td><td>${badge(r.SystemStatus)}</td><td>${esc(r.ReasonIfNo||'-')}</td><td>${esc(r.ACManagerName)}</td><td>${badge(r.ACReportStatus)}</td><td>${esc(r.ACSubmittedTime||'-')}</td></tr>`).join('');document.getElementById('tabCompletion').innerHTML=tableHtml('Daily Done / Pending Status',h,body,rows.length)}
-  function renderReview(rows){const h=['Date','Branch','Bank','TA Name','System Status','Reason','AC Status','Action Required'];const body=rows.map(r=>`<tr><td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.TAName||r.ExpectedTAName)}</td><td>${badge(r.SystemStatus)}</td><td>${esc(r.ReasonIfNo||'-')}</td><td>${badge(r.ACReportStatus)}</td><td><b>${esc(r.ActionRequired)}</b></td></tr>`).join('');document.getElementById('tabReview').innerHTML=tableHtml('Review Required',h,body,rows.length)}
-  function renderAll(rows){const h=['Date','Branch','Bank','TA Name','TA Balance','TA Status','System Status','Reason','AC Manager','AC Balance','AC Status','Updated'];const body=rows.map(r=>`<tr><td>${esc(r.Date)}</td><td>${esc(r.Branch)}</td><td>${esc(r.BankName)}</td><td>${esc(r.TAName||r.ExpectedTAName)}</td><td class="num">${money(r.TASystemBalance)}</td><td>${badge(r.TAReportStatus)}</td><td>${badge(r.SystemStatus)}</td><td>${esc(r.ReasonIfNo||'-')}</td><td>${esc(r.ACManagerName)}</td><td class="num">${money(r.ACBankBalance)}</td><td>${badge(r.ACReportStatus)}</td><td>${esc(r.LastUpdatedTime||'-')}</td></tr>`).join('');document.getElementById('tabAll').innerHTML=tableHtml('Full Daily Report',h,body,rows.length)}
-  function tableHtml(title,headers,rows,count){return`<div class="card-title"><h3>${esc(title)} <span class="muted">(${count})</span></h3></div><div class="table-wrap"><table><thead><tr>${headers.map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="muted">No data found.</td></tr>`}</tbody></table></div>`}
-  function setDashTab(tab,btn){document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('tabCompletion').style.display=tab==='completion'?'block':'none';document.getElementById('tabReview').style.display=tab==='review'?'block':'none';document.getElementById('tabAll').style.display=tab==='all'?'block':'none'}
-  function exportCSV(type){const d=STATE.dashboard;if(!d)return;const rows=type==='review'?(d.reviewRows||[]):(d.rows||[]);if(!rows.length)return toast('No data to export','error');const heads=Object.keys(rows[0]);const csv='\ufeff'+[heads.join(',')].concat(rows.map(r=>heads.map(h=>csvCell(r[h])).join(','))).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=type==='review'?'ANIK_Review_Report.csv':'ANIK_Full_Report.csv';a.click();URL.revokeObjectURL(a.href)}
-  function badge(v){const cls=String(v||'').replace(/\s+/g,'');return`<span class="badge ${cls}">${esc(v||'-')}</span>`}function money(v){if(v===null||v===undefined||v==='')return'-';const n=Number(v);return isNaN(n)?esc(v):'₹'+n.toLocaleString('en-IN',{maximumFractionDigits:2})}function val(id){return document.getElementById(id).value}function setStatus(id,msg){const el=document.getElementById(id);if(el)el.textContent=msg}function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.style.display='block';setTimeout(()=>t.style.display='none',4500)}function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}function escAttr(s){return esc(s).replace(/'/g,'&#39;')}function csvCell(v){return'"'+String(v??'').replace(/"/g,'""')+'"'}function dmyToYmd(s){const p=String(s||'').split('-');return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:s}function debounce(fn,ms){let t;return function(){clearTimeout(t);t=setTimeout(fn,ms)}}
-</script>
+        async function fetchData() {
+            showLoader(true);
+            try {
+                const response = await fetch(`${API_URL}?action=getData`);
+                appData = await response.json();
+                populateUserDropdown();
+            } catch (error) {
+                console.error("डेटा लोड करण्यास अडचण आली:", error);
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        function populateUserDropdown() {
+            const select = document.getElementById('user-select');
+            select.innerHTML = '<option value="">-- निवडा --</option>';
+            appData.users.forEach(user => {
+                let opt = document.createElement('option');
+                opt.value = user.User_Name;
+                opt.innerHTML = `${user.User_Name} (${user.Role})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function onUserSelected() {
+            const selectedVal = document.getElementById('user-select').value;
+            if (!selectedVal) return;
+
+            currentUser = appData.users.find(u => u.User_Name === selectedVal);
+            
+            document.getElementById('selection-screen').classList.remove('active');
+            document.getElementById('app-screen').classList.add('active');
+            document.getElementById('user-info').innerText = `${currentUser.User_Name} (${currentUser.Role})`;
+            
+            setupDashboard();
+        }
+
+        function setupDashboard() {
+            const adminView = document.getElementById('admin-view');
+            const entryView = document.getElementById('entry-view');
+            const bankSelect = document.getElementById('bank-select');
+            const unitGroup = document.getElementById('unit-group');
+
+            bankSelect.innerHTML = '';
+            
+            if (currentUser.Role === 'Admin') {
+                adminView.style.display = 'block';
+                entryView.style.display = 'none';
+                renderAdminTable();
+            } else {
+                adminView.style.display = 'none';
+                entryView.style.display = 'block';
+
+                const allowedBanks = currentUser.Assigned_Banks.split(',').map(b => b.trim());
+                allowedBanks.forEach(bank => {
+                    let opt = document.createElement('option');
+                    opt.value = bank;
+                    opt.innerHTML = bank;
+                    bankSelect.appendChild(opt);
+                });
+
+                if (currentUser.Role === 'Account Manager') {
+                    unitGroup.style.display = 'none';
+                    document.getElementById('entry-title').innerText = "ग्लोबल बँक बॅलन्स अपडेट";
+                } else {
+                    unitGroup.style.display = 'block';
+                    document.getElementById('entry-title').innerText = "युनिट बॅलन्स अपडेट";
+                }
+            }
+        }
+
+        function calculateGap() {
+            const sysBal = parseFloat(document.getElementById('system-bal').value) || 0;
+            const statBal = parseFloat(document.getElementById('statement-bal').value) || 0;
+            const gap = sysBal - statBal;
+            
+            document.getElementById('gap-display').value = gap.toFixed(2);
+            
+            const reasonGroup = document.getElementById('reason-group');
+            const reasonInput = document.getElementById('gap-reason');
+
+            if (gap !== 0) {
+                reasonGroup.style.display = 'block';
+                reasonInput.setAttribute('required', 'true');
+            } else {
+                reasonGroup.style.display = 'none';
+                reasonInput.removeAttribute('required');
+                reasonInput.value = "";
+            }
+        }
+
+        async function submitForm(event) {
+            event.preventDefault();
+            showLoader(true);
+
+            const sysBal = parseFloat(document.getElementById('system-bal').value);
+            const statBal = parseFloat(document.getElementById('statement-bal').value);
+            const gap = sysBal - statBal;
+            const reason = document.getElementById('gap-reason').value;
+
+            if (gap !== 0 && !reason.trim()) {
+                alert("तफावत असल्याने कारण लिहिणे आवश्यक आहे.");
+                showLoader(false);
+                return;
+            }
+
+            const payload = {
+                bankName: document.getElementById('bank-select').value,
+                unit: currentUser.Role === 'Account Manager' ? 'Global' : document.getElementById('unit-input').value,
+                systemBalance: sysBal,
+                statementBalance: statBal,
+                gap: gap,
+                reason: reason,
+                updatedBy: currentUser.User_Name
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                alert("माहिती यशस्वीरीत्या जतन झाली!");
+                document.getElementById('balance-form').reset();
+                document.getElementById('gap-display').value = "";
+                document.getElementById('reason-group').style.display = 'none';
+                fetchData();
+            } catch (error) {
+                alert("सबमिट करताना त्रुटी आली.");
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            const reversedData = [...appData.transactions].reverse();
+
+            reversedData.forEach(row => {
+                const tr = document.createElement('tr');
+                const gapVal = parseFloat(row.Gap) || 0;
+                const statusBadge = gapVal === 0 
+                    ? `<span class="badge badge-match">जुळला</span>` 
+                    : `<span class="badge badge-gap">तफावत</span>`;
+
+                tr.innerHTML = `
+                    <td>${row.Timestamp ? new Date(row.Timestamp).toLocaleDateString() : '-'}</td>
+                    <td>${row.Bank_Name || '-'}</td>
+                    <td>${row.Unit || '-'}</td>
+                    <td>${parseFloat(row.System_Balance || 0).toFixed(2)}</td>
+                    <td>${parseFloat(row.Statement_Balance || 0).toFixed(2)}</td>
+                    <td style="color:${gapVal !== 0 ? 'var(--danger-color)' : 'inherit'}; font-weight:bold;">${gapVal.toFixed(2)}</td>
+                    <td>${row.Reason || '-'}</td>
+                    <td>${row.Updated_By || '-'}</td>
+                    <td>${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('user-select').value = "";
+            document.getElementById('app-screen').classList.remove('active');
+            document.getElementById('selection-screen').classList.add('active');
+            document.getElementById('user-info').innerText = "";
+        }
+    </script>
 </body>
 </html>
