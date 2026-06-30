@@ -53,7 +53,7 @@
 
   <script>
     const APP_CONFIG = {
-      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzHl4PVSgc2REWvF1Fu_JCOQK2FEKkCS2WPBPYkGeX_1ltV_JL7bhQR5EDWmLMmvoQP/exec',
+      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyH37Ia0DsokRDqh9bwTs5pJoNRD_fzMx3ALyZyUnq0ECJK90wEUuSJkSbmuiYKkzs4/exec',
       LOGO_URL: 'https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png',
       APP_NAME: 'ANIK Bank Balance Confirmation'
     };
@@ -64,7 +64,7 @@
       {staffCode:'U002', name:'Kavita Pawar', role:'UNIT', unit:'Bhoom'},
       {staffCode:'U003', name:'Jayashri Kothwale', role:'UNIT', unit:'Washi'}
     ];
-    const state = {users:[], staff:null, banks:{accountManager:[],unit:[]}, settings:{ppUnlockScore:90,maxDashboardDays:120}, activeTab:'', dashboard:null, dashRows:[], cache:{}};
+    const state = {users:[], staff:null, banks:{accountManager:[],unit:[]}, settings:{ppUnlockScore:90,maxDashboardDays:120}, activeTab:'', dashboard:null, dashRows:[], cache:{}, saving:{am:false,unit:false}};
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const num = v => Number(String(v ?? '').replace(/[₹,\s]/g,'')) || 0;
@@ -216,9 +216,12 @@
     function calcGap(i){const gap=num($('u_stmt_'+i)?.value)-num($('u_sys_'+i)?.value);const el=$('u_gap_'+i);if(!el)return;el.textContent='₹ '+fmt(gap);el.className=Math.abs(gap)<.005?'gap-ok':'gap-bad';}
 
     async function filePayload(inputId){
-      const input=$(inputId); if(!input || !input.files || !input.files[0]) return {};
-      const file=input.files[0];
-      if(file.type.startsWith('image/')) return compressImage(file);
+      const input=$(inputId);
+      return filePayloadFromFile(input && input.files ? input.files[0] : null);
+    }
+    async function filePayloadFromFile(file){
+      if(!file) return {};
+      if(file.type && file.type.startsWith('image/')) return compressImage(file);
       const dataUrl=await readAsDataURL(file);
       return {proofName:file.name, proofType:file.type || 'application/octet-stream', proofData:dataUrl};
     }
@@ -226,27 +229,44 @@
     async function compressImage(file){
       const dataUrl=await readAsDataURL(file);
       const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=dataUrl;});
-      const max=1000; let w=img.width,h=img.height; if(Math.max(w,h)>max){const ratio=max/Math.max(w,h);w=Math.round(w*ratio);h=Math.round(h*ratio)}
+      const max=650; let w=img.width,h=img.height; if(Math.max(w,h)>max){const ratio=max/Math.max(w,h);w=Math.round(w*ratio);h=Math.round(h*ratio)}
       const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
-      return {proofName:file.name.replace(/\.[^.]+$/,'')+'.jpg', proofType:'image/jpeg', proofData:canvas.toDataURL('image/jpeg',.58)};
+      return {proofName:file.name.replace(/\.[^.]+$/,'')+'.jpg', proofType:'image/jpeg', proofData:canvas.toDataURL('image/jpeg',.42)};
+    }
+    async function uploadProofBackground(file, ctx, label){
+      if(!file) return;
+      try{
+        toast('Data saved. Proof background मध्ये upload होत आहे...', 'ok');
+        const proof=await filePayloadFromFile(file);
+        const res=await postForm({action:'attachproof', payload:JSON.stringify(ctx), ...proof, userAgent:navigator.userAgent}, 120000);
+        toast(res.message || 'Proof attached successfully', 'ok');
+      }catch(err){
+        toast('Data saved आहे; proof upload slow/failed. पुन्हा same date update केले तरी duplicate होणार नाही.', 'bad');
+      }
     }
 
     async function submitAM(){
+      if(state.saving.am) return toast('Save already चालू आहे. Please wait.','bad');
       const banks=state.banks.accountManager||[], date=$('amDate').value || todayISO();
       const items=[];
-      banks.forEach((b,i)=>{const balance=$('am_bal_'+i).value.trim(); if(balance) items.push({bankId:b.bankId, accountManagerBalance:balance, reason:$('am_rem_'+i).value.trim(), clientId:uid()});});
+      banks.forEach((b,i)=>{const balance=$('am_bal_'+i).value.trim(); if(balance) items.push({bankId:b.bankId, accountManagerBalance:balance, reason:$('am_rem_'+i).value.trim(), clientId:`${date}_AM_${b.bankId}`});});
       if(!items.length) return toast('किमान एक bank balance भरा','bad');
-      const btn=$('amSave'); setBtnLoading(btn,true,'Saving'); $('amText').textContent='Saving fast batch... proof असेल तर upload वेळ लागू शकतो';
+      const proofFile=$('amProof')?.files?.[0] || null;
+      const batchId=uid();
+      const btn=$('amSave'); state.saving.am=true; setBtnLoading(btn,true,'Saving'); $('amText').textContent='Saving data first... proof नंतर background मध्ये upload होईल';
       try{
-        const proof=await filePayload('amProof');
-        const payload={staffCode:state.staff.staffCode, entryType:'AM', date, batchId:uid(), saveMode:'BATCH_FAST', items};
-        const res=await postForm({action:'savebatch', payload:JSON.stringify(payload), ...proof, userAgent:navigator.userAgent});
-        state.cache={}; toast(res.message || `${items.length} banks saved`,'ok'); $('amText').textContent='Saved successfully'; renderAM();
+        const payload={staffCode:state.staff.staffCode, entryType:'AM', date, batchId, saveMode:'UPSERT_FAST', items};
+        const res=await postForm({action:'savebatch', payload:JSON.stringify(payload), userAgent:navigator.userAgent}, 25000);
+        state.cache={}; toast(res.message || `${items.length} banks saved/updated`,'ok'); $('amText').textContent='Saved. Same date-bank duplicate होणार नाही.';
+        const ctx={staffCode:state.staff.staffCode, entryType:'AM', date, batchId, bankIds:items.map(x=>x.bankId)};
+        uploadProofBackground(proofFile, ctx, 'AM');
+        setTimeout(()=>renderAM(), 900);
       }catch(err){toast(err.message,'bad'); $('amText').textContent=err.message;}
-      finally{setBtnLoading(btn,false)}
+      finally{state.saving.am=false;setBtnLoading(btn,false)}
     }
 
     async function submitUnit(){
+      if(state.saving.unit) return toast('Save already चालू आहे. Please wait.','bad');
       const banks=state.banks.unit||[], date=$('uDate').value || todayISO();
       const globalAnik=$('uGlobalAnik')?.value || '', globalSpmbt=$('uGlobalSpmbt')?.value || '';
       const globalAnikReason=$('uGlobalAnikReason')?.value.trim() || '', globalSpmbtReason=$('uGlobalSpmbtReason')?.value.trim() || '';
@@ -261,18 +281,22 @@
         const b=banks[i], gap=num(stmt)-num(sys), reason=$('u_reason_'+i).value.trim();
         if(!sys || !stmt) return toast(`${b.bankName}: system आणि statement दोन्ही balance भरा`,'bad');
         if(Math.abs(gap)>=.005 && reason.length<5) return toast(`${b.bankName}: gap reason required`,'bad');
-        items.push({bankId:b.bankId, systemBalance:sys, statementBalance:stmt, reason, anikSystemMatch:globalAnik, anikNotMatchReason:globalAnikReason, spmbtSystemMatch:globalSpmbt, spmbtNotMatchReason:globalSpmbtReason, clientId:uid()});
+        items.push({bankId:b.bankId, systemBalance:sys, statementBalance:stmt, reason, anikSystemMatch:globalAnik, anikNotMatchReason:globalAnikReason, spmbtSystemMatch:globalSpmbt, spmbtNotMatchReason:globalSpmbtReason, clientId:`${date}_UNIT_${b.bankId}`});
       }
       if(!items.length) return toast('किमान एक bank report भरा','bad');
-      const btn=$('uSave'); setBtnLoading(btn,true,'Saving'); $('uText').textContent='Saving fast batch... proof असेल तर upload वेळ लागू शकतो';
+      const proofFile=$('uProof')?.files?.[0] || null;
+      const batchId=uid();
+      const btn=$('uSave'); state.saving.unit=true; setBtnLoading(btn,true,'Saving'); $('uText').textContent='Saving data first... proof नंतर background मध्ये upload होईल';
       try{
-        const proof=await filePayload('uProof');
-        const payload={staffCode:state.staff.staffCode, entryType:'UNIT', date, batchId:uid(), saveMode:'BATCH_FAST_GLOBAL_CHECK', items};
-        const res=await postForm({action:'savebatch', payload:JSON.stringify(payload), ...proof, userAgent:navigator.userAgent});
+        const payload={staffCode:state.staff.staffCode, entryType:'UNIT', date, batchId, saveMode:'UPSERT_FAST_GLOBAL_CHECK', items};
+        const res=await postForm({action:'savebatch', payload:JSON.stringify(payload), userAgent:navigator.userAgent}, 25000);
         state.cache={};
-        toast(res.message || `${items.length} reports saved`,'ok'); $('uText').textContent='Saved successfully'; renderUnit();
+        toast(res.message || `${items.length} reports saved/updated`,'ok'); $('uText').textContent='Saved. Same date-bank duplicate होणार नाही.';
+        const ctx={staffCode:state.staff.staffCode, entryType:'UNIT', date, batchId, bankIds:items.map(x=>x.bankId)};
+        uploadProofBackground(proofFile, ctx, 'UNIT');
+        setTimeout(()=>renderUnit(), 900);
       }catch(err){toast(err.message,'bad'); $('uText').textContent=err.message;}
-      finally{setBtnLoading(btn,false)}
+      finally{state.saving.unit=false;setBtnLoading(btn,false)}
     }
 
     function renderAdmin(){
