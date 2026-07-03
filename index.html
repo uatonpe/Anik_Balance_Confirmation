@@ -489,6 +489,39 @@
       return r.statementBalance!=='' && r.statementBalance!=null && String(r.statementBalance).trim()!=='';
     }
 
+    function validTAUnitSet(){
+      const set=new Set();
+      (state.users||[]).forEach(u=>{
+        const role=String(u.role||'').toUpperCase();
+        const unit=String(u.unit||'').trim().toUpperCase();
+        if(role.includes('UNIT') && unit) set.add(unit);
+      });
+      return set;
+    }
+
+    function isTAWorkRow(r){
+      // Sheet मधील Unit / UnitUserCode blank असेल किंवा unit AM/HO असेल तर ती bank फक्त Account Manager साठी आहे.
+      // अशा rows मुळे AM नावाचे वेगळे TA card किंवा date score तयार होऊ नये.
+      const u=String(r.unit||'').trim();
+      const bank=String(r.bankName||'').trim();
+      if(!bank) return false;
+      if(!u) return false;
+
+      const x=u.toUpperCase();
+      if(['NA','N/A','AM','A.M.','AM ONLY','ACCOUNT MANAGER','ACCOUNT_MANAGER','ADMIN','HO','HEAD OFFICE'].includes(x)) return false;
+
+      // जर Users sheet मधून TA units आले असतील, तर फक्त त्याच units TA score मध्ये घ्या.
+      // त्यामुळे BankMaster मध्ये Unit blank असलेली B007/B008/B009 सारखी AM-only accounts TA card मध्ये येणार नाहीत.
+      const validUnits=validTAUnitSet();
+      if(validUnits.size && !validUnits.has(x)) return false;
+
+      return true;
+    }
+
+    function taWorkRows(rows){
+      return (rows||[]).filter(isTAWorkRow);
+    }
+
     function isTAPending(r){
       const s=String(r.status||'');
       return s.includes('UNIT MISSING') || !hasTASystem(r) || !hasTAStatement(r);
@@ -515,7 +548,8 @@
     }
 
     function bankKey(r){
-      return String(r.bankId || [r.unit,r.bankName,r.accountNo].join('|'));
+      // BankId sheet मध्ये duplicate झाले तरी card merge होऊ नये म्हणून bank name/account/unit धरतो.
+      return [r.bankId || '', r.bankName || '', r.accountNo || '', r.unit || 'AM_ONLY'].join('|');
     }
 
     function rowIssues(r){
@@ -602,11 +636,11 @@
         if(hasAMBalance(r) && !hasAMBalance(cur)){ m[key]=r; return; }
         if(hasAMBalance(r)===hasAMBalance(cur) && stamp(r)>stamp(cur)){ m[key]=r; }
       });
-      return Object.values(m).sort((a,b)=>String(a.unit||'').localeCompare(String(b.unit||'')) || String(a.bankName||'').localeCompare(String(b.bankName||'')));
+      return Object.values(m).sort((a,b)=>String(a.unit||'ZZZ').localeCompare(String(b.unit||'ZZZ')) || String(a.bankName||'').localeCompare(String(b.bankName||'')));
     }
 
     function renderDashboard(res){
-      const rows=state.dashRows||[];
+      const rows=taWorkRows(state.dashRows||[]);
       const k=computeK(rows);
       $('dashResult').innerHTML = `
         ${renderSmartKpis(rows,k)}
@@ -623,7 +657,7 @@
       const unitCount=groupByUnit(rows).length;
       return `
         <div class="smart-kpis">
-          <div class="smart-kpi"><b>${k.total}</b><span>Range Bank Rows</span></div>
+          <div class="smart-kpi"><b>${k.total}</b><span>TA Range Rows</span></div>
           <div class="smart-kpi ${scoreClass(k.score)}"><b>${k.score}</b><span>Overall Score / 100</span></div>
           <div class="smart-kpi ok"><b>${k.match}</b><span>Matched</span></div>
           <div class="smart-kpi bad"><b>${k.gap}</b><span>Balance Not Match</span></div>
@@ -643,7 +677,7 @@
             <div class="bank-card-top">
               <div>
                 <h3 class="bank-name">${esc(r.bankName || 'Bank')}</h3>
-                <div class="bank-sub">${esc(r.unit || '')}${r.accountNo ? ' | '+esc(r.accountNo) : ''}</div>
+                <div class="bank-sub">${esc(r.unit || 'AM Only')}${r.accountNo ? ' | '+esc(r.accountNo) : ''}</div>
               </div>
               <div class="bank-icon">🏦</div>
             </div>
@@ -660,7 +694,7 @@
           <div class="smart-section-head">
             <div>
               <h2>Latest AM Bank Balance</h2>
-              <p>ही cards selected date range वर depend नाहीत. Latest AM update घेतले आहे.</p>
+              <p>ही cards selected date range वर depend नाहीत. Latest AM update घेतले आहे. Unit blank / AM-only banks येथेच दिसतील; TA score मध्ये अजिबात येणार नाहीत.</p>
               <div class="latest-line">Last updated: <b>${esc(last)}</b> | Updated Banks: <b>${updated.length}/${banks.length}</b></div>
             </div>
             <span class="pill ${updated.length===banks.length && banks.length?'ok':'warn'}">${updated.length}/${banks.length} Updated</span>
@@ -767,7 +801,7 @@
     }
 
     function showTADetails(unit){
-      const rows=(state.dashRows||[]).filter(r=>String(r.unit)===String(unit));
+      const rows=taWorkRows(state.dashRows||[]).filter(r=>String(r.unit)===String(unit));
       const k=computeK(rows);
       const problemRows=rows.filter(r=>isTAPending(r) || isGap(r) || isCheckFail(r));
       const displayRows=(problemRows.length ? problemRows : rows).slice(0,500);
@@ -789,7 +823,7 @@
     }
 
     function showTAOneDate(unit,date){
-      const rows=(state.dashRows||[]).filter(r=>String(r.unit)===String(unit) && String(r.date)===String(date));
+      const rows=taWorkRows(state.dashRows||[]).filter(r=>String(r.unit)===String(unit) && String(r.date)===String(date));
       const k=computeK(rows);
       const body=rows.map(r=>rowDetailTr(r,false,false)).join('');
       $('historyInner').innerHTML=`
@@ -804,7 +838,7 @@
     }
 
     function showDateDetails(date){
-      const rows=(state.dashRows||[]).filter(r=>String(r.date)===String(date));
+      const rows=taWorkRows(state.dashRows||[]).filter(r=>String(r.date)===String(date));
       const k=computeK(rows);
       const groups=groupByUnit(rows);
       const unitRows=groups.map(g=>`
@@ -834,7 +868,7 @@
     function copyDashboardSummary(){
       const d=state.dashboard;
       if(!d) return toast('First load dashboard','bad');
-      const rows=state.dashRows||[], k=computeK(rows), lines=[];
+      const rows=taWorkRows(state.dashRows||[]), k=computeK(rows), lines=[];
       lines.push(`ANIK Bank Balance Summary | ${d.from} to ${d.to}`);
       lines.push(`Overall Score ${k.score}/100 | Match ${k.match} | Not Match ${k.gap} | Pending ${k.taPending} | Check Fail ${k.checkFail}`);
       groupByUnit(rows).forEach(g=>{
