@@ -1,5 +1,7 @@
 
 
+
+
 <!doctype html>
 <html lang="mr">
 <head>
@@ -65,7 +67,7 @@
 
   <script>
     const APP_CONFIG = {
-      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycby7o6xxVZujkXj8WY3lFFQ2eLL191LrIW82ty-Y9houO_6ekmEFrgjOMkzy7FmFdMLP/exec',
+      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzpFASuerkQjLAeD7mFrUhboXAMn6dRn5eHHz5TY6UZBJFFNG0_3hhUrwPsK4g19WSB/exec',
       LOGO_URL: 'https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png',
       APP_NAME: 'ANIK Bank Balance Confirmation'
     };
@@ -76,7 +78,7 @@
       {staffCode:'U002', name:'Kavita Pawar', role:'UNIT', unit:'Bhoom'},
       {staffCode:'U003', name:'Jayashri Kothwale', role:'UNIT', unit:'Washi'}
     ];
-    const state = {users:[], staff:null, banks:{accountManager:[],unit:[]}, settings:{ppUnlockScore:90,maxDashboardDays:120}, activeTab:'', dashboard:null, dashRows:[], cache:{}, saving:{am:false,unit:false}};
+    const state = {users:[], staff:null, banks:{accountManager:[],unit:[]}, settings:{ppUnlockScore:90,maxDashboardDays:120}, activeTab:'', dashboard:null, dashRows:[], amRows:[], cache:{}, saving:{am:false,unit:false}};
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const num = v => Number(String(v ?? '').replace(/[₹,\s]/g,'')) || 0;
@@ -88,6 +90,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       $('appLogo').src = APP_CONFIG.LOGO_URL;
       $('appTitle').textContent = APP_CONFIG.APP_NAME.replace('ANIK ','');
+      state.amRows = readLatestAmCache();
       if(!configured()) $('setupBox').classList.remove('hidden');
       loadUsers(false);
     });
@@ -301,7 +304,7 @@
       try{
         const payload={staffCode:state.staff.staffCode, entryType:'AM', date, batchId, saveMode:'UPSERT_FAST', items};
         const res=await postForm({action:'savebatch', payload:JSON.stringify(payload), userAgent:navigator.userAgent}, 25000);
-        state.cache={}; toast(res.message || `${items.length} banks saved/updated`,'ok'); $('amText').textContent='Saved. Same date-bank duplicate होणार नाही.';
+        state.cache={}; clearDashboardSnapshots(); toast(res.message || `${items.length} banks saved/updated`,'ok'); $('amText').textContent='Saved. Same date-bank duplicate होणार नाही.';
         const ctx={staffCode:state.staff.staffCode, entryType:'AM', date, batchId, bankIds:items.map(x=>x.bankId)};
         uploadProofBackground(proofFile, ctx, 'AM');
         setTimeout(()=>renderAM(), 900);
@@ -334,7 +337,7 @@
       try{
         const payload={staffCode:state.staff.staffCode, entryType:'UNIT', date, batchId, saveMode:'UPSERT_FAST_GLOBAL_CHECK', items};
         const res=await postForm({action:'savebatch', payload:JSON.stringify(payload), userAgent:navigator.userAgent}, 25000);
-        state.cache={};
+        state.cache={}; clearDashboardSnapshots();
         toast(res.message || `${items.length} reports saved/updated`,'ok'); $('uText').textContent='Saved. Same date-bank duplicate होणार नाही.';
         const ctx={staffCode:state.staff.staffCode, entryType:'UNIT', date, batchId, bankIds:items.map(x=>x.bankId)};
         uploadProofBackground(proofFile, ctx, 'UNIT');
@@ -350,7 +353,7 @@
           <div class="row">
             <div>
               <h2 class="title">Smart Admin Dashboard</h2>
-              <p class="sub">AM bank balance नेहमी latest दिसेल. TA score फक्त selected date range मधील daily match/gap वर calculate होईल.</p>
+              <p class="sub">Default view महिन्याच्या 1 तारखेपासून आजपर्यंत आहे. AM साठी प्रत्येक bank चा फक्त शेवटचा balance; month data fast index मधून येतो.</p>
             </div>
             <span class="pill info right">Fast Smart View</span>
           </div>
@@ -358,7 +361,7 @@
           <div class="smart-filter">
             <div>
               <label>From Date</label>
-              <input id="dFrom" type="date" value="${today}">
+              <input id="dFrom" type="date" value="${firstDayMonth()}">
             </div>
             <div>
               <label>To Date</label>
@@ -398,72 +401,129 @@
       loadDashboard();
     }
 
-    function addDaysISO(days){
-      const d=new Date();
-      d.setDate(d.getDate()+Number(days||0));
-      return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
-    }
-
     function jsArg(v){
       return esc(JSON.stringify(String(v ?? '')));
     }
 
     async function cachedDashboard(params, timeoutMs=45000){
       const key='dash:'+JSON.stringify(params);
-      if(state.cache[key]) return state.cache[key];
+      const hit=state.cache[key];
+      if(hit && (Date.now()-hit.at)<60000) return hit.data;
       const res=await apiJsonp('dashboard',params,timeoutMs);
-      state.cache[key]=res;
+      state.cache[key]={at:Date.now(),data:res};
       return res;
+    }
+
+    const AM_CACHE_KEY='anik_latest_am_balance_v4';
+    const DASH_SNAPSHOT_PREFIX='anik_bank_dash_snapshot_v5:';
+
+    function dashboardSnapshotKey(params){
+      return DASH_SNAPSHOT_PREFIX+[params.staffCode||'',params.from||'',params.to||'',String(params.unit||'').trim().toLowerCase()].join('|');
+    }
+
+    function clearDashboardSnapshots(){
+      try{
+        for(let i=localStorage.length-1;i>=0;i--){
+          const k=localStorage.key(i);
+          if(k && k.startsWith(DASH_SNAPSHOT_PREFIX)) localStorage.removeItem(k);
+        }
+      }catch(e){}
+    }
+
+    function readDashboardSnapshot(params){
+      try{
+        const hit=JSON.parse(localStorage.getItem(dashboardSnapshotKey(params))||'null');
+        if(!hit || !hit.data || !hit.data.success) return null;
+        // Month snapshot 12 तास usable; network refresh तरीही background मध्ये होते.
+        if(Date.now()-Number(hit.at||0)>12*60*60*1000) return null;
+        return hit.data;
+      }catch(e){return null;}
+    }
+
+    function writeDashboardSnapshot(params,data){
+      try{localStorage.setItem(dashboardSnapshotKey(params),JSON.stringify({at:Date.now(),data:data}));}catch(e){}
+    }
+
+    function readLatestAmCache(){
+      try{
+        const data=JSON.parse(localStorage.getItem(AM_CACHE_KEY)||'[]');
+        return Array.isArray(data) ? data : [];
+      }catch(e){
+        return [];
+      }
+    }
+
+    function compactAmRow(r){
+      return {
+        bankId:r.bankId||'', bankName:r.bankName||'', accountNo:r.accountNo||'', unit:r.unit||'',
+        accountManagerBalance:r.accountManagerBalance,
+        amUpdatedAt:r.amUpdatedAt||r.updatedAt||r.date||'',
+        updatedAt:r.updatedAt||r.amUpdatedAt||r.date||'',
+        date:r.date||'', status:r.status||''
+      };
+    }
+
+    function updateLatestAmCache(rows){
+      const map={};
+      readLatestAmCache().forEach(r=>{ if(hasAMBalance(r)) map[bankKey(r)]=r; });
+      (rows||[]).forEach(r=>{
+        if(!hasAMBalance(r)) return;
+        const key=bankKey(r), cur=map[key];
+        if(!cur || stamp(r)>stamp(cur)) map[key]=compactAmRow(r);
+      });
+      const latest=Object.values(map);
+      try{ localStorage.setItem(AM_CACHE_KEY,JSON.stringify(latest)); }catch(e){}
+      state.amRows=latest;
+      return latest;
     }
 
     async function loadDashboard(){
       const box=$('dashResult'), btn=$('dashBtn');
       if(!box) return;
       setBtnLoading(btn,true,'Loading');
-      $('dashLoad').textContent='Loading smart dashboard...';
       $('detailBox').innerHTML='';
-      box.innerHTML='<div class="card"><div class="skeleton"></div></div>';
 
-      const unitFilter=$('dUnit').value || '';
       const selectedParams={
         staffCode:state.staff.staffCode,
-        from:$('dFrom').value,
-        to:$('dTo').value,
-        unit:unitFilter,
+        from:$('dFrom').value || firstDayMonth(),
+        to:$('dTo').value || todayISO(),
+        unit:$('dUnit').value || '',
         status:'',
-        search:''
+        search:'',
+        fast:'1'
       };
 
-      // AM balance हा current bank balance आहे, म्हणून selected date range न धरता recent latest update वेगळे घेतो.
-      const amParams={
-        staffCode:state.staff.staffCode,
-        from:addDaysISO(-120),
-        to:todayISO(),
-        unit:unitFilter,
-        status:'',
-        search:''
-      };
+      // मागील same month snapshot असेल तर screen instant दाखवा; fresh data background मध्ये येतो.
+      const snapshot=readDashboardSnapshot(selectedParams);
+      if(snapshot){
+        state.dashboard=snapshot;
+        state.dashRows=snapshot.rows||[];
+        state.amRows=Array.isArray(snapshot.latestAmRows)?snapshot.latestAmRows:readLatestAmCache();
+        renderDashboard(snapshot);
+        $('dashLoad').textContent='Saved month view shown • checking fresh data...';
+      }else{
+        $('dashLoad').textContent='Loading fast month index...';
+        box.innerHTML='<div class="card"><div class="skeleton"></div></div>';
+      }
 
       try{
-        const selectedPromise=cachedDashboard(selectedParams,45000);
-        const amPromise=cachedDashboard(amParams,45000).catch(()=>null);
-        const [res,amRes]=await Promise.all([selectedPromise,amPromise]);
-
+        const res=await cachedDashboard(selectedParams,30000);
         if(!res.success) throw new Error(res.message || 'Dashboard error');
         if(Array.isArray(res.users) && res.users.length) state.users=res.users;
-        if(amRes && Array.isArray(amRes.users) && amRes.users.length) state.users=amRes.users;
-        state.settings=Object.assign(state.settings,res.settings||{},(amRes&&amRes.settings)||{});
+        state.settings=Object.assign(state.settings,res.settings||{});
         state.dashboard=res;
         state.dashRows=res.rows||[];
-        state.amRows=(amRes && amRes.success && Array.isArray(amRes.rows) && amRes.rows.length) ? amRes.rows : state.dashRows;
-        state.amFrom=(amRes && amRes.success) ? amParams.from : res.from;
-        state.amTo=(amRes && amRes.success) ? amParams.to : res.to;
+        state.amRows=Array.isArray(res.latestAmRows) ? res.latestAmRows : readLatestAmCache();
+        updateLatestAmCache(state.amRows.length ? state.amRows : state.dashRows);
+        writeDashboardSnapshot(selectedParams,res);
         renderDashboard(res);
+        $('dashLoad').textContent=(res.cached?'Server cache':'Fresh')+' • '+(res.generatedAt||'updated');
+        setTimeout(()=>{if($('dashLoad')) $('dashLoad').textContent='';},2200);
       }catch(err){
-        box.innerHTML=`<section class="card empty">${esc(err.message)}</section>`;
+        if(!snapshot) box.innerHTML=`<section class="card empty">${esc(err.message)}</section>`;
+        else toast('Saved view shown. Fresh refresh failed: '+err.message,'bad');
       }finally{
         setBtnLoading(btn,false);
-        $('dashLoad').textContent='';
       }
     }
 
@@ -627,14 +687,14 @@
     }
 
     function latestBankRows(){
-      const all=[...(state.dashRows||[]),...(state.amRows||[])];
+      const source=(state.amRows && state.amRows.length) ? state.amRows : (state.dashRows||[]);
       const m={};
-      all.forEach(r=>{
+      source.forEach(r=>{
         const key=bankKey(r);
-        if(!m[key]){ m[key]=r; return; }
+        if(!m[key]){m[key]=r;return;}
         const cur=m[key];
-        if(hasAMBalance(r) && !hasAMBalance(cur)){ m[key]=r; return; }
-        if(hasAMBalance(r)===hasAMBalance(cur) && stamp(r)>stamp(cur)){ m[key]=r; }
+        if(hasAMBalance(r) && !hasAMBalance(cur)){m[key]=r;return;}
+        if(hasAMBalance(r)===hasAMBalance(cur) && stamp(r)>stamp(cur)) m[key]=r;
       });
       return Object.values(m).sort((a,b)=>String(a.unit||'ZZZ').localeCompare(String(b.unit||'ZZZ')) || String(a.bankName||'').localeCompare(String(b.bankName||'')));
     }
@@ -694,7 +754,7 @@
           <div class="smart-section-head">
             <div>
               <h2>Latest AM Bank Balance</h2>
-              <p>ही cards selected date range वर depend नाहीत. Latest AM update घेतले आहे. Unit blank / AM-only banks येथेच दिसतील; TA score मध्ये अजिबात येणार नाहीत.</p>
+              <p>Current month मधील update आणि browser मध्ये सुरक्षित ठेवलेला मागील latest update यापैकी सर्वात नवीन AM balance दाखवला आहे. यासाठी वेगळी 120 दिवसांची request होत नाही.</p>
               <div class="latest-line">Last updated: <b>${esc(last)}</b> | Updated Banks: <b>${updated.length}/${banks.length}</b></div>
             </div>
             <span class="pill ${updated.length===banks.length && banks.length?'ok':'warn'}">${updated.length}/${banks.length} Updated</span>
