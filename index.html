@@ -2,6 +2,7 @@
 
 
 
+
 <!doctype html>
 <html lang="mr">
 <head>
@@ -53,7 +54,7 @@
       <h2 class="title">Select Name</h2>
       <p class="sub">Welcome.</p>
       <label>Staff Name</label>
-      <select id="staffSelect"><option value="">Loading names...</option></select>
+      <select id="staffSelect" onchange="prefetchInit(this.value)"><option value="">Loading names...</option></select>
       <div class="row" style="margin-top:14px"><button id="loginBtn" class="btn full-mobile" onclick="login()">Open Module</button><button class="btn gray" onclick="loadUsers(true)">Refresh Names</button></div>
       <p class="footer-note" style="margin-top:14px">Admin ला फक्त dashboard दिसेल. TA/Account Manager ला assigned bank update screen दिसेल.</p>
     </section>
@@ -78,7 +79,7 @@
       {staffCode:'U002', name:'Kavita Pawar', role:'UNIT', unit:'Bhoom'},
       {staffCode:'U003', name:'Jayashri Kothwale', role:'UNIT', unit:'Washi'}
     ];
-    const state = {users:[], staff:null, banks:{accountManager:[],unit:[]}, settings:{ppUnlockScore:90,maxDashboardDays:120}, activeTab:'', dashboard:null, dashRows:[], amRows:[], cache:{}, saving:{am:false,unit:false}};
+    const state = {users:[], staff:null, banks:{accountManager:[],unit:[]}, settings:{ppUnlockScore:90,maxDashboardDays:120}, activeTab:'', dashboard:null, dashRows:[], amRows:[], cache:{}, saving:{am:false,unit:false}, initPromises:{}, userIndex:{ready:false,units:new Set(),names:{}}};
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const num = v => Number(String(v ?? '').replace(/[₹,\s]/g,'')) || 0;
@@ -111,10 +112,43 @@
       return 'TA / Unit';
     }
 
+    function rebuildUserIndex(){
+      const units=new Set(), names={};
+      (state.users||[]).forEach(u=>{
+        const role=String(u.role||'').toUpperCase();
+        const unit=String(u.unit||'').trim();
+        if(role.includes('UNIT') && unit){
+          const key=unit.toUpperCase();
+          units.add(key);
+          (names[key]||(names[key]=[])).push(u.name);
+        }
+      });
+      state.userIndex={ready:true,units,names};
+    }
+
+    function ensureUserIndex(){
+      if(!state.userIndex || !state.userIndex.ready) rebuildUserIndex();
+      return state.userIndex;
+    }
+
+    function prefetchInit(code){
+      code=String(code||'').trim();
+      if(!code || !configured()) return null;
+      if(state.initPromises[code]) return state.initPromises[code];
+      const p=apiJsonp('init',{staffCode:code},14000)
+        .finally(()=>setTimeout(()=>{ if(state.initPromises[code]===p) delete state.initPromises[code]; },1500));
+      state.initPromises[code]=p;
+      return p;
+    }
+
     function renderUsers(){
       const saved = localStorage.getItem('anik_balance_staff_code') || '';
+      rebuildUserIndex();
       $('staffSelect').innerHTML = '<option value="">Choose staff name</option>' + state.users.map(u => `<option value="${esc(u.staffCode)}">${esc(u.name)} - ${esc(u.unit)} (${esc(roleText(u.role))})</option>`).join('');
-      if(saved && state.users.some(u => u.staffCode === saved)) $('staffSelect').value = saved;
+      if(saved && state.users.some(u => u.staffCode === saved)){
+        $('staffSelect').value = saved;
+        prefetchInit(saved);
+      }
     }
 
     async function loadUsers(force){
@@ -200,7 +234,7 @@
           if(!submitted || finished) return;
           if(loadSeen) return;
           loadSeen=true;
-          setTimeout(()=>done({success:true, requestId, iframeFallback:true, message:'Data saved / updated successfully.'}, null), 700);
+          setTimeout(()=>done({success:true, requestId, iframeFallback:true, message:'Data saved / updated successfully.'}, null), 120);
         };
         window.addEventListener('message', onMsg);
         document.body.appendChild(iframe);
@@ -214,7 +248,7 @@
       if(!code) return toast('Staff name select करा','bad');
       const btn=$('loginBtn'); setBtnLoading(btn,true,'Opening');
       try{
-        const res=await apiJsonp('init',{staffCode:code});
+        const res=await (state.initPromises[code] || prefetchInit(code) || apiJsonp('init',{staffCode:code}));
         if(!res.success) throw new Error(res.message || 'Login failed');
         state.staff=res.staff; state.banks=res.banks || {accountManager:[],unit:[]}; state.settings=Object.assign(state.settings,res.settings||{});
         localStorage.setItem('anik_balance_staff_code', code);
@@ -372,7 +406,7 @@
               <input id="dUnit" placeholder="All / Kallam / Bhoom / Washi" onkeydown="if(event.key==='Enter') loadDashboard()">
             </div>
             <div>
-              <button id="dashBtn" class="btn full-mobile" onclick="loadDashboard()">Refresh Dashboard</button>
+              <button id="dashBtn" class="btn full-mobile" onclick="loadDashboard(true)">Refresh Dashboard</button>
             </div>
           </div>
 
@@ -387,7 +421,7 @@
         <div id="dashResult"><div class="card"><div class="skeleton"></div></div></div>
         <div id="detailBox"></div>
       `;
-      loadDashboard();
+      loadDashboard(false);
     }
 
     function setDashRange(mode){
@@ -398,7 +432,7 @@
         $('dFrom').value=firstDayMonth();
         $('dTo').value=todayISO();
       }
-      loadDashboard();
+      loadDashboard(true);
     }
 
     function jsArg(v){
@@ -434,14 +468,22 @@
       try{
         const hit=JSON.parse(localStorage.getItem(dashboardSnapshotKey(params))||'null');
         if(!hit || !hit.data || !hit.data.success) return null;
-        // Month snapshot 12 तास usable; network refresh तरीही background मध्ये होते.
         if(Date.now()-Number(hit.at||0)>12*60*60*1000) return null;
+        hit.data.__snapshotAt=Number(hit.at||0);
         return hit.data;
       }catch(e){return null;}
     }
 
     function writeDashboardSnapshot(params,data){
-      try{localStorage.setItem(dashboardSnapshotKey(params),JSON.stringify({at:Date.now(),data:data}));}catch(e){}
+      try{
+        const compact={
+          success:true, from:data.from, to:data.to, generatedAt:data.generatedAt||'',
+          rows:Array.isArray(data.rows)?data.rows:[],
+          latestAmRows:Array.isArray(data.latestAmRows)?data.latestAmRows:[],
+          kpis:data.kpis||{}, cached:!!data.cached
+        };
+        localStorage.setItem(dashboardSnapshotKey(params),JSON.stringify({at:Date.now(),data:compact}));
+      }catch(e){}
     }
 
     function readLatestAmCache(){
@@ -477,7 +519,7 @@
       return latest;
     }
 
-    async function loadDashboard(){
+    async function loadDashboard(forceFresh=false){
       const box=$('dashResult'), btn=$('dashBtn');
       if(!box) return;
       setBtnLoading(btn,true,'Loading');
@@ -500,7 +542,13 @@
         state.dashRows=snapshot.rows||[];
         state.amRows=Array.isArray(snapshot.latestAmRows)?snapshot.latestAmRows:readLatestAmCache();
         renderDashboard(snapshot);
-        $('dashLoad').textContent='Saved month view shown • checking fresh data...';
+        const age=Date.now()-Number(snapshot.__snapshotAt||0);
+        $('dashLoad').textContent=age<60000 ? 'Instant cached view' : 'Saved view shown • refreshing quietly...';
+        if(!forceFresh && age<60000){
+          setBtnLoading(btn,false);
+          setTimeout(()=>{if($('dashLoad')) $('dashLoad').textContent='';},900);
+          return;
+        }
       }else{
         $('dashLoad').textContent='Loading fast month index...';
         box.innerHTML='<div class="card"><div class="skeleton"></div></div>';
@@ -509,7 +557,7 @@
       try{
         const res=await cachedDashboard(selectedParams,30000);
         if(!res.success) throw new Error(res.message || 'Dashboard error');
-        if(Array.isArray(res.users) && res.users.length) state.users=res.users;
+        if(Array.isArray(res.users) && res.users.length){ state.users=res.users; rebuildUserIndex(); }
         state.settings=Object.assign(state.settings,res.settings||{});
         state.dashboard=res;
         state.dashRows=res.rows||[];
@@ -550,13 +598,7 @@
     }
 
     function validTAUnitSet(){
-      const set=new Set();
-      (state.users||[]).forEach(u=>{
-        const role=String(u.role||'').toUpperCase();
-        const unit=String(u.unit||'').trim().toUpperCase();
-        if(role.includes('UNIT') && unit) set.add(unit);
-      });
-      return set;
+      return ensureUserIndex().units;
     }
 
     function isTAWorkRow(r){
@@ -657,9 +699,8 @@
     }
 
     function taName(unit){
-      const names=state.users
-        .filter(u=>String(u.role||'').toUpperCase().includes('UNIT') && String(u.unit||'').toLowerCase()===String(unit||'').toLowerCase())
-        .map(u=>u.name);
+      const key=String(unit||'').trim().toUpperCase();
+      const names=ensureUserIndex().names[key] || [];
       return names.join(', ') || unit || 'Unassigned';
     }
 
@@ -702,19 +743,21 @@
     function renderDashboard(res){
       const rows=taWorkRows(state.dashRows||[]);
       const k=computeK(rows);
+      const unitGroups=groupByUnit(rows);
+      const dayGroups=groupByDate(rows);
       $('dashResult').innerHTML = `
-        ${renderSmartKpis(rows,k)}
+        ${renderSmartKpis(rows,k,unitGroups)}
         ${renderBankBalanceCards()}
-        ${renderTAScoreCards(rows,k)}
-        ${renderDateCards(rows)}
+        ${renderTAScoreCards(rows,k,unitGroups)}
+        ${renderDateCards(rows,dayGroups)}
         <section class="card" id="historySection">
           <div id="historyInner"><div class="empty">TA card किंवा Date card click करा म्हणजे त्या range/date चे details दिसतील.</div></div>
         </section>
       `;
     }
 
-    function renderSmartKpis(rows,k){
-      const unitCount=groupByUnit(rows).length;
+    function renderSmartKpis(rows,k,unitGroups){
+      const unitCount=(unitGroups||[]).length;
       return `
         <div class="smart-kpis">
           <div class="smart-kpi"><b>${k.total}</b><span>TA Range Rows</span></div>
@@ -764,8 +807,8 @@
       `;
     }
 
-    function renderTAScoreCards(rows,k){
-      const groups=groupByUnit(rows);
+    function renderTAScoreCards(rows,k,preGroups){
+      const groups=preGroups || groupByUnit(rows);
       const cards=groups.map(g=>{
         const cls=scoreClass(g.score);
         const r=g.reasons;
@@ -808,8 +851,8 @@
       `;
     }
 
-    function renderDateCards(rows){
-      const days=groupByDate(rows);
+    function renderDateCards(rows,preDays){
+      const days=preDays || groupByDate(rows);
       const cards=days.map(d=>{
         const cls=scoreClass(d.score);
         return `
